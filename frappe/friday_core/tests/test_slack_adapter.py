@@ -48,7 +48,10 @@ class TestSignature(unittest.TestCase):
 	def test_stale_timestamp_fails(self, _s):
 		old = str(int(time.time()) - 9999)
 		body = b'{"type":"x"}'
-		headers = {"X-Slack-Signature": self._sig("shhh", old, body.decode()), "X-Slack-Request-Timestamp": old}
+		headers = {
+			"X-Slack-Signature": self._sig("shhh", old, body.decode()),
+			"X-Slack-Request-Timestamp": old,
+		}
 		self.assertFalse(slack_adapter._verify_signature(body, headers))
 
 

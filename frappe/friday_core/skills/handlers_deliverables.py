@@ -68,8 +68,7 @@ def share_deliverables(skill_name: str, parameters: dict) -> dict:
 	project = project_for_session(session_id)
 	if not project:
 		raise ValueError(
-			"This channel isn't linked to a project, so there are no project "
-			"deliverables to share here."
+			"This channel isn't linked to a project, so there are no project deliverables to share here."
 		)
 
 	# Scope = the project PACKAGE: deliverable-* Files on the Project itself.

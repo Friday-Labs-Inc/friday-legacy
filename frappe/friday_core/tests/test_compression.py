@@ -180,18 +180,24 @@ class TestMaybeCompressSession(unittest.TestCase):
 		prov.chat.return_value = {"content": content, "tool_calls": None, "usage": {}}
 		return prov
 
-	def test_skips_when_under_threshold(self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract):
+	def test_skips_when_under_threshold(
+		self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract
+	):
 		mock_load.return_value = _rows(2, 50)
 		self.assertIsNone(maybe_compress_session("P", "S"))
 		mock_resolve.assert_not_called()
 		mock_persist.assert_not_called()
 
-	def test_skips_when_no_uncompacted_rows(self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract):
+	def test_skips_when_no_uncompacted_rows(
+		self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract
+	):
 		mock_load.return_value = []
 		self.assertIsNone(maybe_compress_session("P", "S"))
 		mock_persist.assert_not_called()
 
-	def test_compresses_when_over_threshold(self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract):
+	def test_compresses_when_over_threshold(
+		self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract
+	):
 		mock_load.return_value = self._big_history()
 		prov = self._provider()
 		mock_resolve.return_value = (prov, "aux-model")
@@ -206,7 +212,9 @@ class TestMaybeCompressSession(unittest.TestCase):
 		# Only the middle (not the protected tail) is folded.
 		self.assertLess(len(args[2]), 40)
 
-	def test_no_aux_model_skips_and_preserves_turns(self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract):
+	def test_no_aux_model_skips_and_preserves_turns(
+		self, mock_load, mock_resolve, mock_latest, mock_persist, mock_extract
+	):
 		mock_load.return_value = self._big_history()
 		mock_resolve.return_value = (None, None)
 		self.assertIsNone(maybe_compress_session("P", "S"))

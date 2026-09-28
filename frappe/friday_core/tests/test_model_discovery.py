@@ -227,7 +227,10 @@ class TestOAuthDiscovery(unittest.TestCase):
 		mock_frappe.get_doc.return_value = doc
 
 		with (
-			patch(f"{_M}.fetch_models_oauth", return_value={"models": ["gpt-5.4"], "source": "live", "error": None}) as mock_oauth,
+			patch(
+				f"{_M}.fetch_models_oauth",
+				return_value={"models": ["gpt-5.4"], "source": "live", "error": None},
+			) as mock_oauth,
 			patch(f"{_M}._fresh_oauth_token", return_value="tok-3"),
 		):
 			out = list_models("Codex")

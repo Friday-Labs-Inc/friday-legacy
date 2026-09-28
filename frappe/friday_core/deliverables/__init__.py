@@ -19,4 +19,4 @@ from frappe.friday_core.deliverables.materialize import (
 	materialize_task_deliverable,
 )
 
-__all__ = ["materialize_task_deliverable", "assemble_project_package"]
+__all__ = ["assemble_project_package", "materialize_task_deliverable"]

@@ -49,7 +49,11 @@ class TestProposeHandler(unittest.TestCase):
 
 	def test_creates_pending_proposal(self):
 		row, result, doc = self._propose(
-			{"title": "Embed the no-serif rule", "proposal_type": "update_skill", "target_skill": "brand-naming"}
+			{
+				"title": "Embed the no-serif rule",
+				"proposal_type": "update_skill",
+				"target_skill": "brand-naming",
+			}
 		)
 		self.assertEqual(row["doctype"], "Skill Proposal")
 		self.assertEqual(row["status"], "Pending")

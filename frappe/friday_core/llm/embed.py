@@ -242,9 +242,7 @@ def embed_memory(memory_name: str) -> None:
 		if vec:
 			store_embedding(memory_name, vec)
 	except Exception:
-		frappe.logger("friday.embed").warning(
-			f"embed_memory failed for {memory_name!r}", exc_info=True
-		)
+		frappe.logger("friday.embed").warning(f"embed_memory failed for {memory_name!r}", exc_info=True)
 
 
 def enqueue_embed(memory_name: str) -> None:

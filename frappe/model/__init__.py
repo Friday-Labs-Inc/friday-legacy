@@ -93,7 +93,16 @@ DEFAULT_FIELDS = frozenset(default_fields)
 
 child_table_fields = ("parent", "parentfield", "parenttype")
 
-optional_fields = ("_user_tags", "_comments", "_assign", "_liked_by", "_seen", "_actor_kind", "_actor", "_trace_id")
+optional_fields = (
+	"_user_tags",
+	"_comments",
+	"_assign",
+	"_liked_by",
+	"_seen",
+	"_actor_kind",
+	"_actor",
+	"_trace_id",
+)
 OPTIONAL_FIELDS = frozenset(optional_fields)
 
 table_fields = ("Table", "Table MultiSelect")

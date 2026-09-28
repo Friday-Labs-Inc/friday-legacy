@@ -24,8 +24,12 @@ class TestListProjects(unittest.TestCase):
 
 		fr.get_all.return_value = [
 			{
-				"name": "PRJ-1", "status": "Open", "priority": "high",
-				"percent_complete": 40, "total_tasks": 5, "completed_tasks": 2,
+				"name": "PRJ-1",
+				"status": "Open",
+				"priority": "high",
+				"percent_complete": 40,
+				"total_tasks": 5,
+				"completed_tasks": 2,
 				"project_lead_profile": "Friday",
 			}
 		]

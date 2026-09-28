@@ -138,9 +138,7 @@ class TestSkillDefinitionMedium(unittest.TestCase):
 
 	def test_legacy_cache_entry_defaults_to_text(self):
 		# Cache entries written before design 96 have no medium key.
-		sd = SkillDefinition.from_dict(
-			{"name": "read-record", "parameters_schema": {}, "risk_level": "low"}
-		)
+		sd = SkillDefinition.from_dict({"name": "read-record", "parameters_schema": {}, "risk_level": "low"})
 		self.assertEqual(sd.medium, "text")
 
 	def test_from_skill_doc_reads_medium_field(self):

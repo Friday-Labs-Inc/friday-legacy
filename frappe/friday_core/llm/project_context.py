@@ -136,9 +136,7 @@ def _deliverable_file_names(project: str) -> list:
 			order_by="creation desc",
 		)
 	]
-	task_names = [
-		t.name for t in frappe.get_all("Task", filters={"project": project}, fields=["name"])
-	]
+	task_names = [t.name for t in frappe.get_all("Task", filters={"project": project}, fields=["name"])]
 	if task_names:
 		names += [
 			f.file_name

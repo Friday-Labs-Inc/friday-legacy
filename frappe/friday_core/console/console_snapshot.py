@@ -154,10 +154,7 @@ def _tiles_for_bundle(b: dict) -> list[dict]:
 	# Most-recently-active first; cap at the same limit as legacy Projects.
 	names = sorted(rollup, key=lambda n: rollup[n]["last_activity"], reverse=True)[:PROJECTS_LIMIT]
 	fields = ["name", state_field] + ([display_field] if display_field != "name" else [])
-	items = {
-		r.name: r
-		for r in frappe.get_all(doctype, filters={"name": ["in", names]}, fields=fields)
-	}
+	items = {r.name: r for r in frappe.get_all(doctype, filters={"name": ["in", names]}, fields=fields)}
 
 	tiles: list[dict] = []
 	for name in names:

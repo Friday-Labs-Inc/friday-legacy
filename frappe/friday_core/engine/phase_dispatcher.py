@@ -48,9 +48,7 @@ def dispatch(work_item, meta_name: str) -> str | None:
 		)
 		return None
 
-	profile = frappe.db.get_value(
-		"Agent Profile", {"discriminator_role": role, "status": "Active"}, "name"
-	)
+	profile = frappe.db.get_value("Agent Profile", {"discriminator_role": role, "status": "Active"}, "name")
 	if not profile:
 		frappe.log_error(
 			message=(

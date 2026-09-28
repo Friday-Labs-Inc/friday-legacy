@@ -19,4 +19,4 @@ from frappe.friday_core.conversation.project_channel import (
 	provision_project_channel,
 )
 
-__all__ = ["provision_project_channel", "archive_project_channel"]
+__all__ = ["archive_project_channel", "provision_project_channel"]

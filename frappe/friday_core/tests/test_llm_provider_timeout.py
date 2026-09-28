@@ -82,11 +82,9 @@ class TestPostWithRecoveryHonorsTimeout(unittest.TestCase):
 	"""_post_with_recovery passes the resolved timeout to requests.post."""
 
 	def _make_provider(self, request_timeout_seconds=None):
-		from frappe.friday_core.llm.provider import LLMProvider
-
 		# Construct a bare concrete provider for transport testing.
 		# MinimaxProvider has the simplest init contract here.
-		from frappe.friday_core.llm.provider import MinimaxProvider
+		from frappe.friday_core.llm.provider import LLMProvider, MinimaxProvider
 
 		p = MinimaxProvider(
 			api_key="fake-key",

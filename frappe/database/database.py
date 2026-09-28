@@ -91,7 +91,15 @@ class Database:
 	VARCHAR_LEN = 140
 	MAX_COLUMN_LENGTH = 64
 
-	OPTIONAL_COLUMNS = ("_user_tags", "_comments", "_assign", "_liked_by", "_actor_kind", "_actor", "_trace_id")
+	OPTIONAL_COLUMNS = (
+		"_user_tags",
+		"_comments",
+		"_assign",
+		"_liked_by",
+		"_actor_kind",
+		"_actor",
+		"_trace_id",
+	)
 	DEFAULT_SHORTCUTS = ("_Login", "__user", "_Full Name", "Today", "__today", "now", "Now")
 	STANDARD_VARCHAR_COLUMNS = ("name", "owner", "modified_by")
 	DEFAULT_COLUMNS = ("name", "creation", "modified", "modified_by", "owner", "docstatus", "idx")

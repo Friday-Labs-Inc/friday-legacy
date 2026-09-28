@@ -184,7 +184,9 @@ class ProjectConsole {
 			// A small chip on work-item tiles (named after their DocType) so users
 			// see the metadata-engine work alongside the legacy Project rollups.
 			const kind_chip = is_work_item
-				? `<span class="fc-kind fc-kind-brief">${frappe.utils.escape_html(__(p.doctype))}</span>`
+				? `<span class="fc-kind fc-kind-brief">${frappe.utils.escape_html(
+						__(p.doctype)
+				  )}</span>`
 				: "";
 			const card = $(`
 				<div class="fc-card" data-project="${frappe.utils.escape_html(p.name)}">

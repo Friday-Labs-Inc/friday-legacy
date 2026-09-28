@@ -41,9 +41,11 @@ def _make_project(name: str, backend_ref: str | None = None) -> str:
 
 def _cleanup_project(project_name: str) -> None:
 	"""Delete the project + any channel it provisioned (and the channel's rows)."""
-	ch = frappe.db.get_value("Project", project_name, "conversation_channel") if frappe.db.exists(
-		"Project", project_name
-	) else None
+	ch = (
+		frappe.db.get_value("Project", project_name, "conversation_channel")
+		if frappe.db.exists("Project", project_name)
+		else None
+	)
 	if ch and frappe.db.exists("Raven Channel", ch):
 		frappe.db.sql("DELETE FROM `tabRaven Message` WHERE channel_id = %s", (ch,))
 		frappe.db.sql("DELETE FROM `tabRaven Channel Member` WHERE channel_id = %s", (ch,))
@@ -96,9 +98,7 @@ class TestProjectChannelProvision(unittest.TestCase):
 		bot_user = frappe.db.get_value("Raven Bot", FRIDAY_BOT_NAME, "raven_user")
 		if bot_user:  # bot only exists if the Raven surface was bootstrapped
 			self.assertTrue(
-				frappe.db.exists(
-					"Raven Channel Member", {"channel_id": channel, "user_id": bot_user}
-				)
+				frappe.db.exists("Raven Channel Member", {"channel_id": channel, "user_id": bot_user})
 			)
 
 	def test_provision_is_idempotent(self):

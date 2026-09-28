@@ -103,7 +103,9 @@ class TestProcessEvent(unittest.TestCase):
 		self.assertEqual(event.status, "Processed")
 		self.assertIn("no handler", event.failure_reason)
 
-	@patch(f"{_CORE}._load_handlers", return_value={"boom.event": MagicMock(side_effect=RuntimeError("kaput"))})
+	@patch(
+		f"{_CORE}._load_handlers", return_value={"boom.event": MagicMock(side_effect=RuntimeError("kaput"))}
+	)
 	@patch(f"{_CORE}.frappe")
 	def test_handler_error_marks_failed_with_reason(self, mock_frappe, _handlers):
 		event = self._event(event_type="boom.event")

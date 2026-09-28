@@ -19,6 +19,6 @@ CRON_MANAGER_ROLE = "Friday Cron Manager"
 def ensure_cron_role() -> None:
 	"""Create the `Friday Cron Manager` role if a site does not have it yet."""
 	if not frappe.db.exists("Role", CRON_MANAGER_ROLE):
-		frappe.get_doc(
-			{"doctype": "Role", "role_name": CRON_MANAGER_ROLE, "desk_access": 1}
-		).insert(ignore_permissions=True)
+		frappe.get_doc({"doctype": "Role", "role_name": CRON_MANAGER_ROLE, "desk_access": 1}).insert(
+			ignore_permissions=True
+		)

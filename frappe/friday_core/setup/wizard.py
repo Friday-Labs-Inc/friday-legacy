@@ -88,8 +88,7 @@ def setup_status() -> dict:
 			# an operator can SEE that Raven's own AI is off by design, rather than
 			# discovering the toggle later and quietly splitting the audit trail.
 			"raven_ai_enabled": bool(
-				raven_installed
-				and frappe.db.get_single_value("Raven Settings", "enable_ai_integration")
+				raven_installed and frappe.db.get_single_value("Raven Settings", "enable_ai_integration")
 			),
 			"engine": "friday",
 		},

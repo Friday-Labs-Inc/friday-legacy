@@ -166,9 +166,7 @@ def _format_block(rows: list[dict], token_budget: int) -> str | None:
 	return build_memory_context_block("\n".join(lines))
 
 
-def _recall_recency(
-	profile_name: str, project: "str | None", token_budget: int
-) -> str | None:
+def _recall_recency(profile_name: str, project: "str | None", token_budget: int) -> str | None:
 	"""Newest-first recall — the original behaviour and the safe fallback."""
 	rows = frappe.get_all(
 		"Agent Memory",
@@ -185,9 +183,7 @@ def _recall_recency(
 	return _format_block(rows, token_budget)
 
 
-def _recall_scored(
-	profile_name: str, project: "str | None", token_budget: int, query: str
-) -> str | None:
+def _recall_scored(profile_name: str, project: "str | None", token_budget: int, query: str) -> str | None:
 	"""Relevance + recency ranked recall over Postgres full-text (design 80 step 2a).
 
 	score = 0.6 × full-text relevance to ``query`` + 0.4 × recency decay

@@ -28,7 +28,6 @@ loudly rather than crashing a save.
 from __future__ import annotations
 
 import frappe
-
 from frappe.friday_core.engine import bundle, phase_dispatcher
 
 

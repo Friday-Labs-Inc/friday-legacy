@@ -98,18 +98,14 @@ def enqueue_if_due(session_id: str, profile_name: str) -> None:
 		if count == 0:
 			return
 		_maybe_enqueue(session_id, profile_name, count, _review_interval(), "run_review", "review")
-		_maybe_enqueue(
-			session_id, profile_name, count, _skill_interval(), "run_skill_review", "skillreview"
-		)
+		_maybe_enqueue(session_id, profile_name, count, _skill_interval(), "run_skill_review", "skillreview")
 	except Exception:
 		frappe.logger("friday.self_review").warning(
 			f"enqueue_if_due failed for session {session_id!r}", exc_info=True
 		)
 
 
-def _maybe_enqueue(
-	session_id: str, profile_name: str, count: int, interval: int, fn: str, tag: str
-) -> None:
+def _maybe_enqueue(session_id: str, profile_name: str, count: int, interval: int, fn: str, tag: str) -> None:
 	"""Enqueue review `fn` if `count` is a non-zero multiple of `interval`."""
 	if interval <= 0 or count % interval != 0:
 		return

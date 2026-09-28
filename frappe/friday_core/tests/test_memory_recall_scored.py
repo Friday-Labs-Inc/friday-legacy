@@ -110,33 +110,41 @@ class TestRecallRecency(unittest.TestCase):
 
 class TestRecallBlockRouting(unittest.TestCase):
 	def test_query_on_postgres_uses_scored(self):
-		with patch(f"{_M}.frappe") as fr, patch(f"{_M}._recall_scored", return_value="SCORED") as sc, patch(
-			f"{_M}._recall_recency", return_value="REC"
-		) as rec:
+		with (
+			patch(f"{_M}.frappe") as fr,
+			patch(f"{_M}._recall_scored", return_value="SCORED") as sc,
+			patch(f"{_M}._recall_recency", return_value="REC") as rec,
+		):
 			fr.db.db_type = "postgres"
 			self.assertEqual(M.recall_block("Friday", query="hello"), "SCORED")
 		sc.assert_called_once()
 		rec.assert_not_called()
 
 	def test_scored_error_falls_back_to_recency(self):
-		with patch(f"{_M}.frappe") as fr, patch(
-			f"{_M}._recall_scored", side_effect=RuntimeError("bad sql")
-		), patch(f"{_M}._recall_recency", return_value="REC") as rec:
+		with (
+			patch(f"{_M}.frappe") as fr,
+			patch(f"{_M}._recall_scored", side_effect=RuntimeError("bad sql")),
+			patch(f"{_M}._recall_recency", return_value="REC") as rec,
+		):
 			fr.db.db_type = "postgres"
 			self.assertEqual(M.recall_block("Friday", query="hello"), "REC")
 		rec.assert_called_once()
 
 	def test_no_query_uses_recency(self):
-		with patch(f"{_M}.frappe") as fr, patch(f"{_M}._recall_scored") as sc, patch(
-			f"{_M}._recall_recency", return_value="REC"
+		with (
+			patch(f"{_M}.frappe") as fr,
+			patch(f"{_M}._recall_scored") as sc,
+			patch(f"{_M}._recall_recency", return_value="REC"),
 		):
 			fr.db.db_type = "postgres"
 			self.assertEqual(M.recall_block("Friday"), "REC")
 		sc.assert_not_called()
 
 	def test_non_postgres_uses_recency(self):
-		with patch(f"{_M}.frappe") as fr, patch(f"{_M}._recall_scored") as sc, patch(
-			f"{_M}._recall_recency", return_value="REC"
+		with (
+			patch(f"{_M}.frappe") as fr,
+			patch(f"{_M}._recall_scored") as sc,
+			patch(f"{_M}._recall_recency", return_value="REC"),
 		):
 			fr.db.db_type = "mariadb"
 			self.assertEqual(M.recall_block("Friday", query="hello"), "REC")

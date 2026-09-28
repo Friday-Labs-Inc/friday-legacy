@@ -170,6 +170,6 @@ def ensure_memory_embedding_schema() -> None:
 
 __all__ = [
 	"ensure_agent_settings",
-	"ensure_memory_search_schema",
 	"ensure_memory_embedding_schema",
+	"ensure_memory_search_schema",
 ]

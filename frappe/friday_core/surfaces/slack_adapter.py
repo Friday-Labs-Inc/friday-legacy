@@ -190,9 +190,7 @@ def _handle_command(channel: str, user: str, content: str) -> None:
 	"""
 	from frappe.friday_core.gateway.commands import dispatch_command
 
-	result = dispatch_command(
-		platform=SLACK_PLATFORM, session_id=channel, user=user, raw=content
-	)
+	result = dispatch_command(platform=SLACK_PLATFORM, session_id=channel, user=user, raw=content)
 	_insert_command_row(channel, sender_id=user, content=content, direction="inbound")
 	_insert_command_row(channel, sender_id="system", content=result.reply, direction="outbound")
 

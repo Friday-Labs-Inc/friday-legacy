@@ -150,8 +150,7 @@ class DispatcherConsole {
 	_fetchPulse() {
 		frappe
 			.call({
-				method:
-					"frappe.friday_core.console.dispatcher_console_api.pulse",
+				method: "frappe.friday_core.console.dispatcher_console_api.pulse",
 				type: "GET",
 			})
 			.then((r) => {
@@ -164,14 +163,18 @@ class DispatcherConsole {
 		this._renderCell("scheduler", {
 			headline: p.scheduler.headline || "—",
 			detail: p.scheduler.last
-				? `<b>${this._fmtAge(p.scheduler.age_seconds)}</b> ago · ${this._escape(p.scheduler.last)}`
+				? `<b>${this._fmtAge(p.scheduler.age_seconds)}</b> ago · ${this._escape(
+						p.scheduler.last
+				  )}`
 				: "",
 			status: p.scheduler.status,
 		});
 		this._renderCell("reconciler", {
 			headline: p.reconciler.headline || "—",
 			detail: p.reconciler.last
-				? `<b>${this._fmtAge(p.reconciler.age_seconds)}</b> ago · ${p.reconciler.total_actions || 0} actions${
+				? `<b>${this._fmtAge(p.reconciler.age_seconds)}</b> ago · ${
+						p.reconciler.total_actions || 0
+				  } actions${
 						p.reconciler.errors && p.reconciler.errors.length
 							? ` · errors: ${this._escape(p.reconciler.errors.join(", "))}`
 							: ""
@@ -183,8 +186,10 @@ class DispatcherConsole {
 			headline: `${p.active_leases.count ?? "—"} executing`,
 			detail:
 				p.active_leases.stalest_task != null
-					? `stalest <b>${this._escape(p.active_leases.stalest_task)}</b> · ${this._fmtAge(
-							p.active_leases.stalest_age_seconds,
+					? `stalest <b>${this._escape(
+							p.active_leases.stalest_task
+					  )}</b> · ${this._fmtAge(
+							p.active_leases.stalest_age_seconds
 					  )} since heartbeat`
 					: __("No tasks currently executing."),
 			status: p.active_leases.status,
@@ -193,9 +198,9 @@ class DispatcherConsole {
 			headline: `${p.dispatchable.count ?? "—"} unclaimed`,
 			detail:
 				p.dispatchable.oldest_task != null
-					? `oldest <b>${this._escape(p.dispatchable.oldest_task)}</b> · waited ${this._fmtAge(
-							p.dispatchable.oldest_age_seconds,
-					  )}`
+					? `oldest <b>${this._escape(
+							p.dispatchable.oldest_task
+					  )}</b> · waited ${this._fmtAge(p.dispatchable.oldest_age_seconds)}`
 					: __("Queue empty — dispatcher idle."),
 			status: p.dispatchable.status,
 		});
@@ -219,7 +224,8 @@ class DispatcherConsole {
 
 	_renderCell(key, { headline, detail, status }) {
 		const $cell = this.$body.find(`[data-cell="${key}"]`);
-		$cell.find(".fd-status-dot")
+		$cell
+			.find(".fd-status-dot")
 			.removeClass("green amber red idle")
 			.addClass(status || "idle");
 		$cell.find(".fd-cell-headline").text(headline);
@@ -239,8 +245,7 @@ class DispatcherConsole {
 	_populateTaskPicker() {
 		frappe
 			.call({
-				method:
-					"frappe.friday_core.console.dispatcher_console_api.recent_tasks",
+				method: "frappe.friday_core.console.dispatcher_console_api.recent_tasks",
 				args: { limit: 30 },
 				type: "GET",
 			})
@@ -249,7 +254,9 @@ class DispatcherConsole {
 				$sel.empty().append(`<option value="">${__("Pick a task…")}</option>`);
 				(r.message || []).forEach((t) => {
 					const label = `${t.name} — ${t.title || ""} (${t.workflow_state})`;
-					$sel.append(`<option value="${this._escape(t.name)}">${this._escape(label)}</option>`);
+					$sel.append(
+						`<option value="${this._escape(t.name)}">${this._escape(label)}</option>`
+					);
 				});
 			})
 			.catch(() => {});
@@ -261,8 +268,7 @@ class DispatcherConsole {
 		if (!reset && this.traceCursor) args.since_cursor = this.traceCursor;
 		frappe
 			.call({
-				method:
-					"frappe.friday_core.console.dispatcher_console_api.lifecycle_trace",
+				method: "frappe.friday_core.console.dispatcher_console_api.lifecycle_trace",
 				args,
 				type: "GET",
 			})
@@ -283,11 +289,17 @@ class DispatcherConsole {
 			const ts = data.task_state || {};
 			const s = data.summary || {};
 			$summary.show().html(`
-				<div><div class="label">${__("State")}</div>${this._escape(ts.workflow_state || s.final_state || "—")}</div>
+				<div><div class="label">${__("State")}</div>${this._escape(
+				ts.workflow_state || s.final_state || "—"
+			)}</div>
 				<div><div class="label">${__("Profile")}</div>${this._escape(ts.assigned_to_profile || "—")}</div>
 				<div><div class="label">${__("Retries")}</div>${ts.retry_count ?? 0}</div>
-				<div><div class="label">${__("Blocked Reason")}</div>${this._escape(ts.blocked_reason || s.blocked_reason || "—")}</div>
-				<div><div class="label">${__("Total Cost (USD)")}</div>${s.total_llm_cost_usd ? `$${Number(s.total_llm_cost_usd).toFixed(4)}` : "—"}</div>
+				<div><div class="label">${__("Blocked Reason")}</div>${this._escape(
+				ts.blocked_reason || s.blocked_reason || "—"
+			)}</div>
+				<div><div class="label">${__("Total Cost (USD)")}</div>${
+				s.total_llm_cost_usd ? `$${Number(s.total_llm_cost_usd).toFixed(4)}` : "—"
+			}</div>
 				<div><div class="label">${__("Duration (ms)")}</div>${s.total_duration_ms ?? "—"}</div>
 			`);
 		} else {
@@ -310,7 +322,9 @@ class DispatcherConsole {
 			div.className = `fd-trace-row ${safeType}`;
 			div.innerHTML = `
 				<div class="ts">${this._fmtTime(e.creation)}</div>
-				<div class="et">${this._escape(e.event_type)}<span class="src">${this._escape(e.trigger_source || "")}</span></div>
+				<div class="et">${this._escape(e.event_type)}<span class="src">${this._escape(
+				e.trigger_source || ""
+			)}</span></div>
 				<div class="summary">${this._escape(e.summary || "")}</div>
 			`;
 			frag.appendChild(div);

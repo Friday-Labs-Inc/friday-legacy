@@ -283,13 +283,12 @@ class TestSkillLoader(unittest.TestCase):
 		skill_doc.role_gate = gate_role
 		skill_doc.save(ignore_permissions=True)
 		# Profile holds the TEST_ROLE for matrix admit, but NOT the gate role.
-		_ensure_profile(
-			"FRIDAY-DESIGN78-PROFILE-NO-GATE", roles=[TEST_ROLE], skills=[gated_skill]
-		)
+		_ensure_profile("FRIDAY-DESIGN78-PROFILE-NO-GATE", roles=[TEST_ROLE], skills=[gated_skill])
 		frappe.cache().delete_keys(SKILLS_CACHE_KEY_PREFIX)
 		skills = load_for_profile("FRIDAY-DESIGN78-PROFILE-NO-GATE")
 		self.assertNotIn(
-			gated_skill, [s.name for s in skills],
+			gated_skill,
+			[s.name for s in skills],
 			"profile without the gate role must not see a gated skill",
 		)
 
@@ -309,7 +308,8 @@ class TestSkillLoader(unittest.TestCase):
 		frappe.cache().delete_keys(SKILLS_CACHE_KEY_PREFIX)
 		skills = load_for_profile("FRIDAY-DESIGN78-PROFILE-WITH-GATE")
 		self.assertIn(
-			gated_skill, [s.name for s in skills],
+			gated_skill,
+			[s.name for s in skills],
 			"profile holding the gate role must see the gated skill",
 		)
 
@@ -327,14 +327,13 @@ class TestSkillLoader(unittest.TestCase):
 		# Add a dict entry — this is what protects legacy gated skills.
 		_ROLE_GATED_SKILLS[fallback_skill] = "Orchestrator"
 		try:
-			_ensure_profile(
-				"FRIDAY-DESIGN78-PROFILE-DICT-NO", roles=[TEST_ROLE], skills=[fallback_skill]
-			)
+			_ensure_profile("FRIDAY-DESIGN78-PROFILE-DICT-NO", roles=[TEST_ROLE], skills=[fallback_skill])
 			# This profile has no agent_role set → should be blocked by dict fallback.
 			frappe.cache().delete_keys(SKILLS_CACHE_KEY_PREFIX)
 			skills = load_for_profile("FRIDAY-DESIGN78-PROFILE-DICT-NO")
 			self.assertNotIn(
-				fallback_skill, [s.name for s in skills],
+				fallback_skill,
+				[s.name for s in skills],
 				"dict fallback must still block when agent_role tier doesn't match",
 			)
 		finally:

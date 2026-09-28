@@ -371,8 +371,14 @@ class TestDispatcherResultContract(unittest.TestCase):
 		mock_frappe.db.exists.return_value = True
 		mock_frappe.has_permission.return_value = True
 		mock_frappe.db.get_all.return_value = [
-			{"name": "a1d916290f", "file_name": "friday-labs-design-system.md",
-			 "file_url": "/x", "is_private": 1, "file_size": 4585, "creation": "t"},
+			{
+				"name": "a1d916290f",
+				"file_name": "friday-labs-design-system.md",
+				"file_url": "/x",
+				"is_private": 1,
+				"file_size": 4585,
+				"creation": "t",
+			},
 		]
 		out = list_project_files("list-project-files", {"project_name": "PRJ-1"})
 		self.assertIn("result", out)

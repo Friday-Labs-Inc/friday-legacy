@@ -25,6 +25,6 @@ OPERATOR_ROLE = "Friday Operator"
 def ensure_command_roles() -> None:
 	"""Create the `Friday Operator` role if a site does not already have it."""
 	if not frappe.db.exists("Role", OPERATOR_ROLE):
-		frappe.get_doc(
-			{"doctype": "Role", "role_name": OPERATOR_ROLE, "desk_access": 1}
-		).insert(ignore_permissions=True)
+		frappe.get_doc({"doctype": "Role", "role_name": OPERATOR_ROLE, "desk_access": 1}).insert(
+			ignore_permissions=True
+		)

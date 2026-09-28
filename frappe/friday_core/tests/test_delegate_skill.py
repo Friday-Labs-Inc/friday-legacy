@@ -15,8 +15,8 @@ from synchronous-inline to async-durable. Pins the new locked contract:
 """
 
 import unittest
-from unittest.mock import MagicMock, patch
 from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 from frappe.friday_core.skills import handlers_delegate
 
@@ -212,9 +212,7 @@ class TestHappyPath(unittest.TestCase):
 		# Delegating from a chat session (not task::) is a root delegation:
 		# parent_task is None, and an explicit project param is honoured.
 		_wire(mock_frappe, session="chat-session-1")
-		out = handlers_delegate.delegate_task(
-			"delegate-task", _params(project="PROJ-OVERRIDE")
-		)
+		out = handlers_delegate.delegate_task("delegate-task", _params(project="PROJ-OVERRIDE"))
 		payload = mock_frappe.get_doc.call_args[0][0]
 		self.assertIsNone(payload["parent_task"])
 		self.assertEqual(payload["project"], "PROJ-OVERRIDE")  # explicit wins

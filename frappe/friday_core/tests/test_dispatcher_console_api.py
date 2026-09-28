@@ -42,9 +42,9 @@ def _ensure_test_task() -> str:
 		return existing[0]
 	project = frappe.get_all("Project", limit=1, pluck="name")
 	if not project:
-		proj = frappe.get_doc(
-			{"doctype": "Project", "project_name": "Test API Project"}
-		).insert(ignore_permissions=True)
+		proj = frappe.get_doc({"doctype": "Project", "project_name": "Test API Project"}).insert(
+			ignore_permissions=True
+		)
 		project_name = proj.name
 	else:
 		project_name = project[0]

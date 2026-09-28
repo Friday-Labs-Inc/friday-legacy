@@ -26,7 +26,6 @@ recency LIKE scan if the FTS column/index isn't present.
 from __future__ import annotations
 
 import frappe
-
 from frappe.friday_core.agent_runner.dispatcher import register_skill_handler
 
 SKILL_NAME = "session_search"

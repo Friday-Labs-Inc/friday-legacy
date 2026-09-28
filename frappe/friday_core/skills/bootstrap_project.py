@@ -37,7 +37,10 @@ _SKILLS: dict[str, dict] = {
 		"schema": {
 			"type": "object",
 			"properties": {
-				"status": {"type": "string", "description": "Optional status filter (e.g. Open, On Hold, Completed)."}
+				"status": {
+					"type": "string",
+					"description": "Optional status filter (e.g. Open, On Hold, Completed).",
+				}
 			},
 			"required": [],
 		},

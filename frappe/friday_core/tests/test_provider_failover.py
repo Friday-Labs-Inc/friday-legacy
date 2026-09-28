@@ -155,8 +155,18 @@ class TestProviderFailover(unittest.TestCase):
 		# Q4 — replay after a failover must NOT pin the (possibly foreign)
 		# model; the resumed turn re-resolves fresh.
 		events = [
-			{"event_type": EVENT_TURN_STARTED, "payload": {"messages": list(_BASE_MESSAGES), "model": "primary-model", "agent_profile": _PROFILE}},
-			{"event_type": EVENT_PROVIDER_FAILOVER, "payload": {"from": "Minimax", "to": "Codex", "reason": "rate_limit"}},
+			{
+				"event_type": EVENT_TURN_STARTED,
+				"payload": {
+					"messages": list(_BASE_MESSAGES),
+					"model": "primary-model",
+					"agent_profile": _PROFILE,
+				},
+			},
+			{
+				"event_type": EVENT_PROVIDER_FAILOVER,
+				"payload": {"from": "Minimax", "to": "Codex", "reason": "rate_limit"},
+			},
 		]
 		state = rebuild(events, _PROFILE, lambda m, t: None)
 		self.assertIsNone(state.model)
@@ -194,9 +204,7 @@ class TestFallbackResolution(unittest.TestCase):
 		primary = MagicMock()
 		primary.fallback_provider_name = "Codex"
 		backup = MagicMock()
-		with patch(
-			"frappe.friday_core.llm.provider.get_provider_by_name", return_value=backup
-		) as mg:
+		with patch("frappe.friday_core.llm.provider.get_provider_by_name", return_value=backup) as mg:
 			out = get_fallback_provider(primary)
 		mg.assert_called_once_with("Codex")
 		self.assertIs(out, backup)

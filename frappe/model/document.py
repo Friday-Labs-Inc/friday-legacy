@@ -1416,7 +1416,12 @@ class Document(BaseDocument):
 				f"""update `tab{self.doctype}`
 				set `_actor_kind` = %(kind)s, `_actor` = %(id)s, `_trace_id` = %(trace)s
 				where name = %(name)s""",
-				{"kind": actor.get("kind"), "id": actor.get("id"), "trace": actor.get("trace_id"), "name": self.name},
+				{
+					"kind": actor.get("kind"),
+					"id": actor.get("id"),
+					"trace": actor.get("trace_id"),
+					"name": self.name,
+				},
 			)
 		except Exception:
 			frappe.db.rollback(save_point="frappe_actor_stamp")
