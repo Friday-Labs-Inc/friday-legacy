@@ -3,13 +3,12 @@
 **Status:** Accepted · 2026-09-17
 **Relates:** ADR-0003, ADR-0005, ADR-0006
 
-> **PARTIALLY SUPERSEDED 2026-09-28 — the rover programme ended.**
->
-> The decision below stands: one Friday bench hosts every domain app, and a
-> product never shares a bench with the platform. Only its second example is
-> moot — there is no rover command centre left to host, because the Mark 1 rover
-> programme ended on 2026-09-28. The Decision text is unedited; it was true when
-> the decision was taken on 2026-09-17.
+> _**Note · 2026-09-28** — the Mark 1 rover programme ended, a product decision
+> taken outside this repository. **Status stays Accepted:** one Friday bench
+> hosts every domain app, and a product never shares a bench with the platform.
+> Only the Decision's second example is moot — there is no rover command centre
+> left to host. The Decision text below is unedited; it was true when the
+> decision was taken on 2026-09-17._
 
 ## Context
 
