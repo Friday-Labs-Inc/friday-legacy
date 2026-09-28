@@ -91,6 +91,13 @@ jobs:
       #    48.0.1 / 49.0.0 / 50.0.0. Spans four majors.
       #  PYSEC-2026-3940  WeasyPrint 68.0 → 70.0, pinned alongside pydyf 0.12.1;
       #    both move together and the PDF output needs eyes on it.
+      #
+      # Nothing for pypdf: 10 advisories against 6.13.3 were published while
+      # this change was in review — the 10:14 UTC run on 2026-09-28 reported
+      # none of them and the 10:30 run reported all ten, against an identical
+      # pinned dependency set. Cleared by the bump to 6.16.1 in pyproject.toml.
+      # That fifteen minutes is the whole argument for this workflow: on the
+      # old per-PR job, that would have turned somebody's unrelated PR red.
       - name: Install and run pip-audit
         run: |
           pip install pip-audit

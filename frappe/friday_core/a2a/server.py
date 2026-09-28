@@ -212,11 +212,11 @@ def _tasks_cancel(req_id, params: dict, store) -> dict:
 # ---------------------------------------------------------------------------
 
 
-# nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
 # Guest-reachable by design, but NOT unauthenticated: the first thing handle()
 # does is _authorized(config), which requires the static X-A2A-Token header. The
 # docstring below explains why that is a custom header and not Authorization:
 # Bearer. Accepted 2026-09-28, FRI-24.
+# nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def handle():
 	"""POST /api/method/frappe.friday_core.a2a.server.handle — the A2A server endpoint.
@@ -248,10 +248,10 @@ def handle():
 	return _raw(response, status=200)
 
 
-# nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
 # The A2A spec requires the Agent Card to be publicly readable, so this one is
 # genuinely unauthenticated. It returns 404 when the server is disabled, and it
 # exposes only the card the operator configured. Accepted 2026-09-28, FRI-24.
+# nosemgrep: frappe-semgrep-rules.rules.security.guest-whitelisted-method
 @frappe.whitelist(allow_guest=True, methods=["GET"])
 def agent_card():
 	"""GET the A2A Agent Card as a raw JSON body (the discovery document).
