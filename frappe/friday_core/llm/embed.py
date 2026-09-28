@@ -122,7 +122,7 @@ def _embed_local(text: str) -> "list[float]":
 	model, kind = _local_model()
 	if kind == "fastembed":
 		# fastembed yields one normalised numpy vector per input text.
-		return list(model.embed([text]))[0].tolist()
+		return next(iter(model.embed([text]))).tolist()
 	# sentence-transformers: normalize so cosine == dot product.
 	return model.encode(text, normalize_embeddings=True).tolist()
 

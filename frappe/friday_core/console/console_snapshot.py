@@ -163,7 +163,7 @@ def _tiles_for_bundle(b: dict) -> list[dict]:
 			continue
 		row = rollup[name]
 		total, completed = row["total"], row["completed"]
-		pct = int(round(completed / total * 100)) if total else 0
+		pct = round(completed / total * 100) if total else 0
 		state = item.get(state_field)
 		tiles.append(
 			{

@@ -154,7 +154,7 @@ class TestBusySessionQueues(unittest.TestCase):
 		# The whole point: nothing is written, nothing is marked processed —
 		# the row stays processed=0 so the holder's drain / sweeper re-runs it.
 		for in_worker in (True, False):
-			enqueue, out, mark, drain = self._run_with_lock_denied(in_worker, lock_retry=0)
+			_enqueue, out, mark, drain = self._run_with_lock_denied(in_worker, lock_retry=0)
 			self.assertFalse(out.called, "no busy message — message is queued, not rejected")
 			self.assertFalse(mark.called, "row must stay processed=0")
 			# busy path returns before the try/finally, so no drain on this path

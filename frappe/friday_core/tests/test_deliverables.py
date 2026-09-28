@@ -136,7 +136,6 @@ class TestMaterializeTask(unittest.TestCase):
 
 		materialize_task_deliverable(self.task)
 		frappe.db.commit()
-		first = set(_deliverable_files("Task", self.task))
 		materialize_task_deliverable(self.task)
 		frappe.db.commit()
 		# Same logical files, not doubled.

@@ -149,7 +149,7 @@ def purge_old_events() -> int:
 	total_deleted = 0
 	try:
 		for _ in range(PURGE_MAX_BATCHES):
-			rows = frappe.db.sql(
+			frappe.db.sql(
 				"""
 				DELETE FROM `tabDispatcher Event`
 				WHERE name IN (
