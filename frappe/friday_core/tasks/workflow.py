@@ -24,7 +24,6 @@ Responsibilities
 from __future__ import annotations
 
 import frappe
-
 from frappe.friday_core.observability import emit
 
 # Lazy import to avoid circular imports — warroom itself doesn't import tasks.
@@ -135,7 +134,9 @@ def _emit_state_change_event(doc: "Task") -> None:
 	Reads ``frappe.flags.dispatcher_event_source`` to honestly stamp who caused
 	the transition (dispatcher_claim, reconciler_reset, runner_complete, etc.).
 	"""
-	from_state = (doc.get_doc_before_save() or {}).get("workflow_state") if doc.get_doc_before_save() else None
+	from_state = (
+		(doc.get_doc_before_save() or {}).get("workflow_state") if doc.get_doc_before_save() else None
+	)
 	to_state = doc.workflow_state
 	emit(
 		"workflow.state_change",

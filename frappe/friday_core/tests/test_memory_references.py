@@ -115,8 +115,6 @@ class TestParseReferences(unittest.TestCase):
 		self.assertEqual(references.parse_references("no refs here"), [])
 
 
-
-
 class TestExpandReferences(unittest.TestCase):
 	def setUp(self):
 		reg = patch.dict(references.REFERENCE_REGISTRY, _FIXTURE_REGISTRY)

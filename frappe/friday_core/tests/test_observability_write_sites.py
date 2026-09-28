@@ -33,7 +33,14 @@ FIXTURE_PROFILE = "Friday"
 
 def setUpModule():
 	if not frappe.db.exists("Agent Profile", FIXTURE_PROFILE):
-		frappe.get_doc({"doctype": "Agent Profile", "profile_name": FIXTURE_PROFILE, "agent_role": "Specialist", "status": "Active"}).insert(ignore_permissions=True)
+		frappe.get_doc(
+			{
+				"doctype": "Agent Profile",
+				"profile_name": FIXTURE_PROFILE,
+				"agent_role": "Specialist",
+				"status": "Active",
+			}
+		).insert(ignore_permissions=True)
 		frappe.db.commit()
 
 
@@ -54,9 +61,9 @@ def _ensure_test_task() -> str:
 	project = frappe.get_all("Project", limit=1, pluck="name")
 	project_name = project[0] if project else None
 	if not project_name:
-		proj = frappe.get_doc(
-			{"doctype": "Project", "project_name": "Test Write Sites Project"}
-		).insert(ignore_permissions=True)
+		proj = frappe.get_doc({"doctype": "Project", "project_name": "Test Write Sites Project"}).insert(
+			ignore_permissions=True
+		)
 		project_name = proj.name
 	task = frappe.get_doc(
 		{
@@ -100,9 +107,7 @@ class TestWorkflowEmits(unittest.TestCase):
 		"""A save with the dispatcher_event_source flag set carries that source."""
 		task = frappe.get_doc("Task", self.task_name)
 		# Force a state change.
-		task.workflow_state = (
-			"Pending" if task.workflow_state != "Pending" else "Cancelled"
-		)
+		task.workflow_state = "Pending" if task.workflow_state != "Pending" else "Cancelled"
 		frappe.flags.dispatcher_event_source = "unit_test_source"
 		try:
 			task.save(ignore_permissions=True)
@@ -176,9 +181,7 @@ class TestDispatcherSkipEmits(unittest.TestCase):
 		"""A milestone task hitting _ready_to_dispatch emits milestone_not_dispatchable."""
 		from frappe.friday_core.tasks.dispatcher import _ready_to_dispatch
 
-		fake_task = frappe._dict(
-			{"name": self.task_name, "execution_mode": "milestone"}
-		)
+		fake_task = frappe._dict({"name": self.task_name, "execution_mode": "milestone"})
 		result = _ready_to_dispatch(fake_task)
 		frappe.db.commit()
 		self.assertFalse(result)
@@ -191,9 +194,7 @@ class TestDispatcherSkipEmits(unittest.TestCase):
 		"""Two back-to-back skips for the same reason produce ONE event."""
 		from frappe.friday_core.tasks.dispatcher import _ready_to_dispatch
 
-		fake_task = frappe._dict(
-			{"name": self.task_name, "execution_mode": "milestone"}
-		)
+		fake_task = frappe._dict({"name": self.task_name, "execution_mode": "milestone"})
 		_ready_to_dispatch(fake_task)
 		_ready_to_dispatch(fake_task)
 		_ready_to_dispatch(fake_task)
@@ -376,9 +377,7 @@ class TestIssueRaisedEmit(unittest.TestCase):
 	def test_raise_failure_issue_emits_issue_raised(self):
 		from frappe.friday_core.issues.raise_issue import raise_failure_issue
 
-		issue_name = raise_failure_issue(
-			self.task_name, error_type="UnitTestError", details="simulated"
-		)
+		issue_name = raise_failure_issue(self.task_name, error_type="UnitTestError", details="simulated")
 		frappe.db.commit()
 		self.assertTrue(frappe.db.exists("Issue", issue_name))
 

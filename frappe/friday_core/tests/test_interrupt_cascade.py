@@ -158,9 +158,7 @@ class TestStopReportsBreadth(unittest.TestCase):
 			patch("frappe.friday_core.gateway.interrupt.request_interrupt"),
 			patch("frappe.friday_core.gateway.interrupt.cascade_interrupt", return_value=2),
 		):
-			result = commands.dispatch_command(
-				platform="raven", session_id="S", user="op@x.com", raw="/stop"
-			)
+			result = commands.dispatch_command(platform="raven", session_id="S", user="op@x.com", raw="/stop")
 		self.assertTrue(result.ok)
 		self.assertIn("2", result.reply)
 
@@ -173,9 +171,7 @@ class TestStopReportsBreadth(unittest.TestCase):
 			patch("frappe.friday_core.gateway.interrupt.request_interrupt"),
 			patch("frappe.friday_core.gateway.interrupt.cascade_interrupt", return_value=0),
 		):
-			result = commands.dispatch_command(
-				platform="raven", session_id="S", user="op@x.com", raw="/stop"
-			)
+			result = commands.dispatch_command(platform="raven", session_id="S", user="op@x.com", raw="/stop")
 		self.assertTrue(result.ok)
 		self.assertNotIn("delegated", result.reply.lower())
 

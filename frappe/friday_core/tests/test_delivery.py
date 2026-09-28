@@ -99,7 +99,7 @@ class TestDeliverPlatform(unittest.TestCase):
 
 		res = delivery.DeliveryRouter().deliver("hello", [delivery.DeliveryTarget.parse("raven:CH-1")])
 
-		row = [p for p in seen if p["doctype"] == "Chat Message"][0]
+		row = next(p for p in seen if p["doctype"] == "Chat Message")
 		self.assertEqual(row["direction"], "outbound")
 		self.assertEqual(row["platform"], "raven")
 		self.assertEqual(row["session_id"], "CH-1")
@@ -180,7 +180,7 @@ class TestTruncation(unittest.TestCase):
 		doctypes = [p["doctype"] for p in seen]
 		self.assertIn("File", doctypes)  # full output saved
 		self.assertIn("Chat Message", doctypes)
-		row = [p for p in seen if p["doctype"] == "Chat Message"][0]
+		row = next(p for p in seen if p["doctype"] == "Chat Message")
 		self.assertLessEqual(len(row["content"]), delivery.MAX_PLATFORM_OUTPUT + 200)
 		self.assertIn("truncated", row["content"].lower())
 
@@ -199,7 +199,7 @@ class TestLocalSink(unittest.TestCase):
 			job_id="JOB1",
 			job_name="Nightly Digest",
 		)
-		f = [p for p in seen if p["doctype"] == "File"][0]
+		f = next(p for p in seen if p["doctype"] == "File")
 		self.assertTrue(f.get("is_private"))
 		self.assertIn("Nightly Digest", f["content"])
 		self.assertIn("body text", f["content"])

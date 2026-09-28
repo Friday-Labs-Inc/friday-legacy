@@ -55,21 +55,25 @@ class TestStreamAssembly(unittest.TestCase):
 
 	def test_text_content_chunks_concatenate(self):
 		p = self._provider()
-		stream = iter([
-			_fake_chunk(content="Hello "),
-			_fake_chunk(content="world", finish_reason="stop"),
-			_terminal_usage_chunk(),
-		])
+		stream = iter(
+			[
+				_fake_chunk(content="Hello "),
+				_fake_chunk(content="world", finish_reason="stop"),
+				_terminal_usage_chunk(),
+			]
+		)
 		data = p._consume_stream(stream, model="MiniMax-M3")
 		self.assertEqual(data["choices"][0]["message"]["content"], "Hello world")
 		self.assertEqual(data["choices"][0]["finish_reason"], "stop")
 
 	def test_usage_from_terminal_chunk(self):
 		p = self._provider()
-		stream = iter([
-			_fake_chunk(content="hi"),
-			_terminal_usage_chunk(prompt=100, completion=50, total=150),
-		])
+		stream = iter(
+			[
+				_fake_chunk(content="hi"),
+				_terminal_usage_chunk(prompt=100, completion=50, total=150),
+			]
+		)
 		data = p._consume_stream(stream, model="MiniMax-M3")
 		self.assertEqual(data["usage"]["prompt_tokens"], 100)
 		self.assertEqual(data["usage"]["completion_tokens"], 50)
@@ -94,12 +98,14 @@ class TestStreamAssembly(unittest.TestCase):
 			id=None,
 			function=SimpleNamespace(name=None, arguments='_id": "WI-0009"}'),
 		)
-		stream = iter([
-			_fake_chunk(tool_calls=[tc0]),
-			_fake_chunk(tool_calls=[tc1]),
-			_fake_chunk(tool_calls=[tc2], finish_reason="tool_calls"),
-			_terminal_usage_chunk(),
-		])
+		stream = iter(
+			[
+				_fake_chunk(tool_calls=[tc0]),
+				_fake_chunk(tool_calls=[tc1]),
+				_fake_chunk(tool_calls=[tc2], finish_reason="tool_calls"),
+				_terminal_usage_chunk(),
+			]
+		)
 		data = p._consume_stream(stream, model="MiniMax-M3")
 		tcs = data["choices"][0]["message"]["tool_calls"]
 		self.assertEqual(len(tcs), 1)
@@ -124,11 +130,13 @@ class TestStreamAssembly(unittest.TestCase):
 			id="call_x",
 			function=SimpleNamespace(name="get_brand_brief", arguments='{"x": 1}'),
 		)
-		stream = iter([
-			_fake_chunk(tool_calls=[tc_a]),
-			_fake_chunk(tool_calls=[tc_b], finish_reason="tool_calls"),
-			_terminal_usage_chunk(),
-		])
+		stream = iter(
+			[
+				_fake_chunk(tool_calls=[tc_a]),
+				_fake_chunk(tool_calls=[tc_b], finish_reason="tool_calls"),
+				_terminal_usage_chunk(),
+			]
+		)
 		data = p._consume_stream(stream, model="MiniMax-M3")
 		self.assertEqual(
 			data["choices"][0]["message"]["tool_calls"][0]["function"]["name"],
@@ -215,10 +223,12 @@ class TestChatGoesThroughStreaming(unittest.TestCase):
 		p = MinimaxProvider(api_key="fake-key", default_model="MiniMax-M3")
 
 		fake_data = {
-			"choices": [{
-				"message": {"role": "assistant", "content": "ok", "tool_calls": None},
-				"finish_reason": "stop",
-			}],
+			"choices": [
+				{
+					"message": {"role": "assistant", "content": "ok", "tool_calls": None},
+					"finish_reason": "stop",
+				}
+			],
 			"usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
 			"model": "MiniMax-M3",
 		}
@@ -313,10 +323,12 @@ def _api_connection_error():
 
 def _success_data(content="ok"):
 	return {
-		"choices": [{
-			"message": {"role": "assistant", "content": content, "tool_calls": None},
-			"finish_reason": "stop",
-		}],
+		"choices": [
+			{
+				"message": {"role": "assistant", "content": content, "tool_calls": None},
+				"finish_reason": "stop",
+			}
+		],
 		"usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
 		"model": "MiniMax-M3",
 	}
@@ -353,12 +365,16 @@ class TestStreamingRetryBehavior(unittest.TestCase):
 			yield _fake_chunk(content="hi", finish_reason="stop")
 			yield _terminal_usage_chunk()
 
-		client = self._patch_create([
-			_api_status_error(500, "server error"),
-			_success_stream(),
-		])
-		with patch.object(p, "_build_openai_client", return_value=client), \
-		     patch("time.sleep", return_value=None):
+		client = self._patch_create(
+			[
+				_api_status_error(500, "server error"),
+				_success_stream(),
+			]
+		)
+		with (
+			patch.object(p, "_build_openai_client", return_value=client),
+			patch("time.sleep", return_value=None),
+		):
 			data = p._stream_with_recovery(
 				stream_kwargs={"model": "MiniMax-M3", "messages": [], "stream": True},
 				model="MiniMax-M3",
@@ -375,12 +391,16 @@ class TestStreamingRetryBehavior(unittest.TestCase):
 			yield _fake_chunk(content="ok", finish_reason="stop")
 			yield _terminal_usage_chunk()
 
-		client = self._patch_create([
-			_api_status_error(429, "rate limited"),
-			_success_stream(),
-		])
-		with patch.object(p, "_build_openai_client", return_value=client), \
-		     patch("time.sleep", return_value=None):
+		client = self._patch_create(
+			[
+				_api_status_error(429, "rate limited"),
+				_success_stream(),
+			]
+		)
+		with (
+			patch.object(p, "_build_openai_client", return_value=client),
+			patch("time.sleep", return_value=None),
+		):
 			data = p._stream_with_recovery(
 				stream_kwargs={"model": "MiniMax-M3", "messages": [], "stream": True},
 				model="MiniMax-M3",
@@ -393,8 +413,10 @@ class TestStreamingRetryBehavior(unittest.TestCase):
 
 		p = _StubProvider.make()
 		client = self._patch_create([_api_status_error(400, "bad request")])
-		with patch.object(p, "_build_openai_client", return_value=client), \
-		     patch("time.sleep", return_value=None):
+		with (
+			patch.object(p, "_build_openai_client", return_value=client),
+			patch("time.sleep", return_value=None),
+		):
 			with self.assertRaises(LLMError):
 				p._stream_with_recovery(
 					stream_kwargs={"model": "MiniMax-M3", "messages": [], "stream": True},
@@ -408,8 +430,10 @@ class TestStreamingRetryBehavior(unittest.TestCase):
 
 		p = _StubProvider.make()
 		client = self._patch_create([_api_status_error(401, "unauthorized")])
-		with patch.object(p, "_build_openai_client", return_value=client), \
-		     patch("time.sleep", return_value=None):
+		with (
+			patch.object(p, "_build_openai_client", return_value=client),
+			patch("time.sleep", return_value=None),
+		):
 			with self.assertRaises(LLMAuthError):
 				p._stream_with_recovery(
 					stream_kwargs={"model": "MiniMax-M3", "messages": [], "stream": True},
@@ -421,13 +445,17 @@ class TestStreamingRetryBehavior(unittest.TestCase):
 		from frappe.friday_core.llm.provider import LLMError
 
 		p = _StubProvider.make()
-		client = self._patch_create([
-			_api_timeout_error(),
-			_api_timeout_error(),
-			_api_timeout_error(),
-		])
-		with patch.object(p, "_build_openai_client", return_value=client), \
-		     patch("time.sleep", return_value=None):
+		client = self._patch_create(
+			[
+				_api_timeout_error(),
+				_api_timeout_error(),
+				_api_timeout_error(),
+			]
+		)
+		with (
+			patch.object(p, "_build_openai_client", return_value=client),
+			patch("time.sleep", return_value=None),
+		):
 			with self.assertRaises(LLMError) as ctx:
 				p._stream_with_recovery(
 					stream_kwargs={"model": "MiniMax-M3", "messages": [], "stream": True},
@@ -443,13 +471,17 @@ class TestStreamingRetryBehavior(unittest.TestCase):
 		from frappe.friday_core.llm.provider import LLMError
 
 		p = _StubProvider.make()
-		client = self._patch_create([
-			_api_connection_error(),
-			_api_connection_error(),
-			_api_connection_error(),
-		])
-		with patch.object(p, "_build_openai_client", return_value=client), \
-		     patch("time.sleep", return_value=None):
+		client = self._patch_create(
+			[
+				_api_connection_error(),
+				_api_connection_error(),
+				_api_connection_error(),
+			]
+		)
+		with (
+			patch.object(p, "_build_openai_client", return_value=client),
+			patch("time.sleep", return_value=None),
+		):
 			with self.assertRaises(LLMError):
 				p._stream_with_recovery(
 					stream_kwargs={"model": "MiniMax-M3", "messages": [], "stream": True},

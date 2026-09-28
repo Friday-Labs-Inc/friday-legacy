@@ -85,14 +85,14 @@ class TestBuildProviderOAuthBranch(unittest.TestCase):
 # carries status + usage but an EMPTY output array (live backend behaviour) —
 # both facts are pinned by this fixture.
 _CODEX_SSE_OK = (
-	'event: response.created\n'
+	"event: response.created\n"
 	'data: {"type":"response.created","response":{"id":"resp_1","status":"in_progress"}}\n'
 	"\n"
-	'event: response.output_item.done\n'
+	"event: response.output_item.done\n"
 	'data: {"type":"response.output_item.done","item":'
 	'{"type":"message","content":[{"type":"output_text","text":"OK"}]}}\n'
 	"\n"
-	'event: response.completed\n'
+	"event: response.completed\n"
 	'data: {"type":"response.completed","response":{"id":"resp_1","status":"completed",'
 	'"output":[],"usage":{"input_tokens":3,"output_tokens":2}}}\n'
 )

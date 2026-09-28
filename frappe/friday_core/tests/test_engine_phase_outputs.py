@@ -18,7 +18,6 @@ import unittest
 from unittest.mock import patch
 
 import frappe
-
 from frappe.friday_core.skills.handlers_engine import _summary_text, get_phase_outputs
 
 
@@ -61,9 +60,9 @@ class TestGetPhaseOutputs(unittest.TestCase):
 		# own workflow state — so any DocType serves as the work-item here. We
 		# use a kernel one (Project) on purpose: this test must pass on a bare
 		# kernel install with no domain app present.
-		return frappe.get_doc(
-			{"doctype": "Project", "project_name": "PhaseOut Co"}
-		).insert(ignore_permissions=True)
+		return frappe.get_doc({"doctype": "Project", "project_name": "PhaseOut Co"}).insert(
+			ignore_permissions=True
+		)
 
 	def _completed(self, item_name, phase_key, summary):
 		return frappe.get_doc(
@@ -83,9 +82,7 @@ class TestGetPhaseOutputs(unittest.TestCase):
 		item = self._work_item()
 		self._completed(item.name, "strategy", "STRAT_BODY_123")
 		self._completed(item.name, "naming", "NAME_BODY_456")
-		out = get_phase_outputs(
-			"get-phase-outputs", {"work_item": item.name, "work_item_doctype": "Project"}
-		)
+		out = get_phase_outputs("get-phase-outputs", {"work_item": item.name, "work_item_doctype": "Project"})
 		self.assertIn("STRAT_BODY_123", out["result"])
 		self.assertIn("NAME_BODY_456", out["result"])
 		self.assertIn("strategy", out["result"])

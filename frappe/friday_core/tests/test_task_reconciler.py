@@ -124,7 +124,9 @@ class TestReconcilerExecutingStale(unittest.TestCase):
 	@patch("frappe.friday_core.tasks.reconciler._raise_runner_lost_issue")
 	@patch("frappe.friday_core.tasks.reconciler.get_jobs")
 	@patch("frappe.friday_core.tasks.reconciler.frappe")
-	def test_one_poisoned_row_is_isolated_and_the_sweep_continues(self, mock_frappe, mock_get_jobs, mock_issue):
+	def test_one_poisoned_row_is_isolated_and_the_sweep_continues(
+		self, mock_frappe, mock_get_jobs, mock_issue
+	):
 		"""A row whose save() raises must roll back to the per-row savepoint and NOT
 		abort the rest of the sweep — the next good row still gets rescued. Without the
 		savepoint, Postgres aborts the whole tick tx and every later row/sweep no-ops

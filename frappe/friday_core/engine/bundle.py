@@ -44,8 +44,7 @@ def active_bundle_for(doctype: str) -> str | None:
 	cached = frappe.cache().hget(_CACHE_KEY, doctype)
 	if cached is None:
 		cached = (
-			frappe.db.get_value("Domain Bundle", {"domain_doctype": doctype, "is_active": 1}, "name")
-			or ""
+			frappe.db.get_value("Domain Bundle", {"domain_doctype": doctype, "is_active": 1}, "name") or ""
 		)
 		frappe.cache().hset(_CACHE_KEY, doctype, cached)
 	return cached or None

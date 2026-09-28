@@ -78,9 +78,7 @@ def _outbound_signature(secret: str, raw_body: bytes, endpoint: str = "") -> str
 	v1 = hmac.new(secret.encode(), f"{t}.".encode() + raw_body, hashlib.sha256).hexdigest()
 	if not endpoint:
 		return f"t={t},v1={v1}"
-	v2 = hmac.new(
-		secret.encode(), f"{t}.{endpoint}.".encode() + raw_body, hashlib.sha256
-	).hexdigest()
+	v2 = hmac.new(secret.encode(), f"{t}.{endpoint}.".encode() + raw_body, hashlib.sha256).hexdigest()
 	return f"t={t},v1={v1},v2={v2}"
 
 
@@ -126,9 +124,7 @@ def send(connector_name: str, path: str, payload: dict, files: dict | None = Non
 				# rewriting, so both ends compute the same string.
 				from urllib.parse import urlparse
 
-				headers[SIGNATURE_HEADER_OUT] = _outbound_signature(
-					secret, body, urlparse(url).path
-				)
+				headers[SIGNATURE_HEADER_OUT] = _outbound_signature(secret, body, urlparse(url).path)
 				headers["Content-Type"] = "application/json"
 				response = requests.post(url, data=body, headers=headers, timeout=_TIMEOUT_SECONDS)
 			else:

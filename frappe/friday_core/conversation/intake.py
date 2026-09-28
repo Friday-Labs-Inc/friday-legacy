@@ -239,7 +239,9 @@ def persist_for(platform: str):
 	return lambda session_id, message, reply: _default_persist(session_id, message, reply, platform=platform)
 
 
-def _default_persist(session_id: str, message: str, reply: str, platform: str = DEFAULT_INTAKE_PLATFORM) -> None:
+def _default_persist(
+	session_id: str, message: str, reply: str, platform: str = DEFAULT_INTAKE_PLATFORM
+) -> None:
 	"""Write the inbound + outbound transcript rows for this turn (session continuity)."""
 	import frappe
 

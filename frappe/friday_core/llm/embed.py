@@ -122,7 +122,7 @@ def _embed_local(text: str) -> "list[float]":
 	model, kind = _local_model()
 	if kind == "fastembed":
 		# fastembed yields one normalised numpy vector per input text.
-		return list(model.embed([text]))[0].tolist()
+		return next(iter(model.embed([text]))).tolist()
 	# sentence-transformers: normalize so cosine == dot product.
 	return model.encode(text, normalize_embeddings=True).tolist()
 
@@ -242,9 +242,7 @@ def embed_memory(memory_name: str) -> None:
 		if vec:
 			store_embedding(memory_name, vec)
 	except Exception:
-		frappe.logger("friday.embed").warning(
-			f"embed_memory failed for {memory_name!r}", exc_info=True
-		)
+		frappe.logger("friday.embed").warning(f"embed_memory failed for {memory_name!r}", exc_info=True)
 
 
 def enqueue_embed(memory_name: str) -> None:

@@ -176,9 +176,10 @@ class TestResolveReviewProvider(unittest.TestCase):
 		doc = MagicMock()
 		doc.get.return_value = "Cheap Model"
 		prov = object()
-		with patch(_SETTINGS, return_value=doc), patch(
-			"frappe.friday_core.llm.provider.get_provider_by_name", return_value=prov
-		) as gp:
+		with (
+			patch(_SETTINGS, return_value=doc),
+			patch("frappe.friday_core.llm.provider.get_provider_by_name", return_value=prov) as gp,
+		):
 			self.assertIs(SR._resolve_review_provider(), prov)
 		gp.assert_called_once_with("Cheap Model")
 

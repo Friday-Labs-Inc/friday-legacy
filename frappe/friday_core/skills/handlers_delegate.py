@@ -159,7 +159,9 @@ def delegate_task(skill_name: str, parameters: dict) -> dict:
 def _delegation_depth(task_name: str, *, _get_parent=None) -> int:
 	"""Walk the parent_task chain and return the depth (0 = root)."""
 	if _get_parent is None:
-		_get_parent = lambda name: frappe.db.get_value("Task", name, "parent_task")
+
+		def _get_parent(name):
+			return frappe.db.get_value("Task", name, "parent_task")
 
 	depth = 0
 	current = task_name

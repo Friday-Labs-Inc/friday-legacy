@@ -37,6 +37,7 @@ def _as_dict(payload):
 	if isinstance(payload, dict):
 		return payload
 	import json as _json
+
 	try:
 		return _json.loads(payload)
 	except Exception:
@@ -53,9 +54,9 @@ def _ensure_test_task() -> str:
 	project = frappe.get_all("Project", limit=1, pluck="name")
 	project_name = project[0] if project else None
 	if not project_name:
-		proj = frappe.get_doc(
-			{"doctype": "Project", "project_name": "Test Emit Project"}
-		).insert(ignore_permissions=True)
+		proj = frappe.get_doc({"doctype": "Project", "project_name": "Test Emit Project"}).insert(
+			ignore_permissions=True
+		)
 		project_name = proj.name
 	task = frappe.get_doc(
 		{

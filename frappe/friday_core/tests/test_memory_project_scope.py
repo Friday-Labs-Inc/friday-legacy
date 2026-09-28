@@ -29,29 +29,33 @@ import frappe
 def _profile() -> str:
 	name = "D73-MEM-PROFILE"
 	if not frappe.db.exists("Agent Profile", name):
-		frappe.get_doc(
-			{"doctype": "Agent Profile", "profile_name": name, "status": "Active"}
-		).insert(ignore_permissions=True)
+		frappe.get_doc({"doctype": "Agent Profile", "profile_name": name, "status": "Active"}).insert(
+			ignore_permissions=True
+		)
 	return name
 
 
 def _mem(profile: str, text: str, project: str | None) -> str:
-	return frappe.get_doc(
-		{
-			"doctype": "Agent Memory",
-			"memory": text,
-			"agent_profile": profile,
-			"project": project,
-			"status": "Active",
-		}
-	).insert(ignore_permissions=True).name
+	return (
+		frappe.get_doc(
+			{
+				"doctype": "Agent Memory",
+				"memory": text,
+				"agent_profile": profile,
+				"project": project,
+				"status": "Active",
+			}
+		)
+		.insert(ignore_permissions=True)
+		.name
+	)
 
 
 def _project(name: str) -> str:
 	if not frappe.db.exists("Project", name):
-		frappe.get_doc(
-			{"doctype": "Project", "project_name": name, "status": "Open"}
-		).insert(ignore_permissions=True)
+		frappe.get_doc({"doctype": "Project", "project_name": name, "status": "Open"}).insert(
+			ignore_permissions=True
+		)
 	return name
 
 
@@ -122,9 +126,9 @@ class TestRecallScoping(unittest.TestCase):
 		frappe.db.commit()
 
 		block = recall_block(self.profile, project="D73 Proj FLI") or ""
-		self.assertIn("Mission Control", block)        # this project
-		self.assertIn("house style is bold", block)    # global
-		self.assertNotIn("no serifs", block)           # OTHER project — excluded
+		self.assertIn("Mission Control", block)  # this project
+		self.assertIn("house style is bold", block)  # global
+		self.assertNotIn("no serifs", block)  # OTHER project — excluded
 
 	def test_no_project_returns_all(self):
 		from frappe.friday_core.llm.memory import recall_block

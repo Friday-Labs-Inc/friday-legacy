@@ -1,0 +1,119 @@
+# Dependency advisory scan.
+#
+# This deliberately does NOT run on every pull request. pip-audit compares the
+# resolved dependency set against an advisory database that changes daily, so a
+# per-PR run goes red the moment a new CVE is published against a transitive
+# dependency — with no relation to the diff under review. That is how the job
+# came to be red on every PR for two weeks (FRI-24): the signal stopped being
+# about the pull request, so the team learned to merge over it.
+#
+# So the scan runs where its result is actionable:
+#   * on pull requests that change a dependency manifest — there the result IS
+#     a function of the diff, and it blocks;
+#   * on a daily schedule and on pushes to develop — a new advisory is a real
+#     finding, it just is not any one author's pull request to fix.
+#
+# Accepted advisories are listed under ACCEPTED below, each with a date, a fix
+# version if one exists, and the reason. Anything not listed fails the run.
+
+name: Dependency Audit
+
+on:
+  pull_request:
+    paths:
+      - 'pyproject.toml'
+      - '**/requirements*.txt'
+      - '.github/workflows/dependency-audit.yml'
+  push:
+    branches: [develop]
+    paths:
+      - 'pyproject.toml'
+      - '**/requirements*.txt'
+      - '.github/workflows/dependency-audit.yml'
+  schedule:
+    # 03:17 UTC daily — off the hour so it does not queue behind the rush.
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-audit-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pip-audit:
+    name: 'Vulnerable Dependency Check'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Cache pip
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      # ACCEPTED ADVISORIES — reviewed 2026-09-28, see FRI-24.
+      #
+      # Every entry below is a conscious acceptance, not an oversight. Each one
+      # states why it is here and what retires it. Review this list whenever it
+      # is touched; an entry with no owner and no retirement condition should be
+      # deleted rather than carried forward.
+      #
+      # --- No upstream fix exists -------------------------------------------
+      #  PYSEC-2026-2860  pdfkit 1.0.0 — command injection via unsanitised
+      #    input. No fixed release; upstream is unmaintained. Friday only ever
+      #    calls pdfkit with internally generated HTML, never with user-supplied
+      #    option strings. Retires when pdfkit is replaced or patched.
+      #  GHSA-g75f-g53v-794x  bleach 6.3.0 — no fixed version published. The two
+      #    sibling advisories are fixed by the 6.4.0 bump in this change.
+      #  PYSEC-2026-3412  WeasyPrint 68.0 — CSS injection, only reachable with
+      #    presentational_hints=True. Frappe renders PDFs with the default
+      #    (False), so the affected path is not used.
+      #
+      # --- Fix exists, bump deferred: needs a working test suite -------------
+      # These three cannot be bumped safely while the 'Friday Core Tests' job is
+      # a no-op (every step ends in `|| true`). They are tracked separately and
+      # must be removed from this list once that job actually runs.
+      #  PYSEC-2026-3696/3697/3698/3699/3923  sqlparse 0.5.5 → 0.6.0.
+      #    A 0.x minor bump on the query parser; needs query-layer test cover.
+      #  GHSA-537c-gmf6-5ccf, PYSEC-2026-3552/3553/3554  cryptography 46.0.7 →
+      #    48.0.1 / 49.0.0 / 50.0.0. Spans four majors.
+      #  PYSEC-2026-3940  WeasyPrint 68.0 → 70.0, pinned alongside pydyf 0.12.1;
+      #    both move together and the PDF output needs eyes on it.
+      #
+      # Nothing for pypdf: 10 advisories against 6.13.3 were published while
+      # this change was in review — the 10:14 UTC run on 2026-09-28 reported
+      # none of them and the 10:30 run reported all ten, against an identical
+      # pinned dependency set. Cleared by the bump to 6.16.1 in pyproject.toml.
+      # That fifteen minutes is the whole argument for this workflow: on the
+      # old per-PR job, that would have turned somebody's unrelated PR red.
+      - name: Install and run pip-audit
+        run: |
+          pip install pip-audit
+          cd "${GITHUB_WORKSPACE}"
+          pip-audit --desc on \
+            --ignore-vuln PYSEC-2026-2860 \
+            --ignore-vuln GHSA-g75f-g53v-794x \
+            --ignore-vuln PYSEC-2026-3412 \
+            --ignore-vuln PYSEC-2026-3696 \
+            --ignore-vuln PYSEC-2026-3697 \
+            --ignore-vuln PYSEC-2026-3698 \
+            --ignore-vuln PYSEC-2026-3699 \
+            --ignore-vuln PYSEC-2026-3923 \
+            --ignore-vuln GHSA-537c-gmf6-5ccf \
+            --ignore-vuln PYSEC-2026-3552 \
+            --ignore-vuln PYSEC-2026-3553 \
+            --ignore-vuln PYSEC-2026-3554 \
+            --ignore-vuln PYSEC-2026-3940 \
+            .

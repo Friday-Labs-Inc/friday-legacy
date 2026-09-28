@@ -23,10 +23,9 @@ One dispatcher cycle (``tick()``) runs every 60 seconds and:
 from __future__ import annotations
 
 import frappe
-from frappe.utils import now_datetime
-
 from frappe.friday_core.observability import emit
 from frappe.friday_core.observability.emit import emit_skip_deduped
+from frappe.utils import now_datetime
 
 _logger = frappe.logger("friday.tasks.dispatcher")
 

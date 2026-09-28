@@ -60,7 +60,11 @@ class TestGenerateImage(unittest.TestCase):
 	@patch(f"{_P}._get_api_key")
 	@patch(f"{_P}._resolve_provider_row")
 	def test_minimax_success_saves_and_returns_url(self, m_row, m_key, m_req, m_save):
-		m_row.return_value = {"name": "Minimax", "provider_type": "minimax", "base_url": "https://api.minimax.io/v1"}
+		m_row.return_value = {
+			"name": "Minimax",
+			"provider_type": "minimax",
+			"base_url": "https://api.minimax.io/v1",
+		}
 		m_key.return_value = "secret"
 		post_resp = MagicMock()
 		post_resp.json.return_value = {
@@ -74,7 +78,9 @@ class TestGenerateImage(unittest.TestCase):
 		m_save.return_value = MagicMock(file_url="/files/glacial-logo-1.png")
 		frappe.flags["friday_dispatch_context"] = {"agent_profile": "Visual Agent", "session_id": "chat-uuid"}
 
-		out = hv.generate_image("generate-image", {"prompt": "glacial minimalist logo", "aspect_ratio": "1:1"})
+		out = hv.generate_image(
+			"generate-image", {"prompt": "glacial minimalist logo", "aspect_ratio": "1:1"}
+		)
 
 		self.assertEqual(out["image_urls"], ["/files/glacial-logo-1.png"])
 		self.assertIn("/files/glacial-logo-1.png", out["result"])
@@ -140,7 +146,9 @@ class TestGenerateImage(unittest.TestCase):
 		m_row.return_value = {"name": "Minimax", "provider_type": "minimax", "base_url": ""}
 		m_key.return_value = "secret"
 		post_resp = MagicMock()
-		post_resp.json.return_value = {"base_resp": {"status_code": 1008, "status_msg": "insufficient balance"}}
+		post_resp.json.return_value = {
+			"base_resp": {"status_code": 1008, "status_msg": "insufficient balance"}
+		}
 		m_req.post.return_value = post_resp
 		frappe.flags["friday_dispatch_context"] = {"agent_profile": "Visual Agent"}
 
@@ -150,7 +158,11 @@ class TestGenerateImage(unittest.TestCase):
 	@patch(f"{_P}._get_api_key")
 	@patch(f"{_P}._resolve_provider_row")
 	def test_china_host_selected_by_base_url(self, m_row, m_key):
-		m_row.return_value = {"name": "Minimax", "provider_type": "minimax", "base_url": "https://api.minimaxi.com/v1"}
+		m_row.return_value = {
+			"name": "Minimax",
+			"provider_type": "minimax",
+			"base_url": "https://api.minimaxi.com/v1",
+		}
 		m_key.return_value = "secret"
 		with patch("frappe.friday_core.skills.handlers_visual.requests") as m_req:
 			post_resp = MagicMock()

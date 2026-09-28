@@ -71,48 +71,6 @@ jobs:
           pip install semgrep
           semgrep ci --config ./frappe-semgrep-rules/rules --config r/python.lang.correctness
 
-  deps-vulnerable-check:
-    name: 'Vulnerable Dependency Check'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
-      - uses: actions/checkout@v6
-
-      - name: Cache pip
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml', '**/setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-
-      - name: Install and run pip-audit
-        run: |
-          pip install pip-audit
-          cd ${GITHUB_WORKSPACE}
-          # TEMPORARY IGNORES — remove each as the upstream bump lands:
-          #   pypdf 6.10.2 → 6.12.0 fixes CVE-2026-48155 + CVE-2026-48156
-          #     (dependabot PR #84 already in flight).
-          #   pyjwt 2.12.1 → 2.13.0 fixes PYSEC-2026-175/177/178/179
-          #     (needs a separate bump PR).
-          # Existing legacy ignores PYSEC-2023-312 and CVE-2026-4539 predate
-          # design 61 — out of scope for this PR.
-          pip-audit --desc on \
-            --ignore-vuln PYSEC-2023-312 \
-            --ignore-vuln CVE-2026-4539 \
-            --ignore-vuln CVE-2026-48155 \
-            --ignore-vuln CVE-2026-48156 \
-            --ignore-vuln PYSEC-2026-175 \
-            --ignore-vuln PYSEC-2026-177 \
-            --ignore-vuln PYSEC-2026-178 \
-            --ignore-vuln PYSEC-2026-179 \
-            .
-
   precommit:
     name: 'Pre-Commit'
     runs-on: ubuntu-latest

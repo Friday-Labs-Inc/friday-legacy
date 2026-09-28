@@ -39,9 +39,9 @@ def _ensure_test_task() -> str:
 	project = frappe.get_all("Project", limit=1, pluck="name")
 	project_name = project[0] if project else None
 	if not project_name:
-		proj = frappe.get_doc(
-			{"doctype": "Project", "project_name": "Test Retention Project"}
-		).insert(ignore_permissions=True)
+		proj = frappe.get_doc({"doctype": "Project", "project_name": "Test Retention Project"}).insert(
+			ignore_permissions=True
+		)
 		project_name = proj.name
 	task = frappe.get_doc(
 		{
@@ -73,9 +73,7 @@ class TestIsTerminal(unittest.TestCase):
 		"""A semantic block (no_profile_for_skills, dependency_failed) is terminal."""
 		from frappe.friday_core.observability.retention import is_terminal
 
-		doc = frappe._dict(
-			{"workflow_state": "Blocked", "blocked_reason": "no_profile_for_skills"}
-		)
+		doc = frappe._dict({"workflow_state": "Blocked", "blocked_reason": "no_profile_for_skills"})
 		self.assertTrue(is_terminal(doc))
 
 	def test_blocked_with_transient_reason_is_NOT_terminal(self):
@@ -110,8 +108,8 @@ class TestWriteTaskCompletionSummary(unittest.TestCase):
 		_clear_events_for_task(self.task_name)
 
 	def test_writes_one_row_per_task(self):
-		from frappe.friday_core.observability.retention import write_task_completion_summary
 		from frappe.friday_core.observability import emit
+		from frappe.friday_core.observability.retention import write_task_completion_summary
 
 		# Emit some events so the count is non-zero.
 		emit("runner.start", task=self.task_name)
@@ -180,7 +178,7 @@ class TestPurgeOldEvents(unittest.TestCase):
 
 	def test_deletes_old_rows_only(self):
 		from frappe.friday_core.observability import emit
-		from frappe.friday_core.observability.retention import purge_old_events, RETENTION_DAYS
+		from frappe.friday_core.observability.retention import RETENTION_DAYS, purge_old_events
 
 		# Emit two fresh rows.
 		fresh1 = emit("runner.start", task=self.task_name, summary="fresh 1")

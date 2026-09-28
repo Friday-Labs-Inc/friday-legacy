@@ -152,7 +152,7 @@ _FACT_EXTRACTION_SYSTEM = (
 	"Do NOT extract: transient task chatter, one-off requests already handled, "
 	"environment/setup errors, or anything temporary.\n"
 	'Output ONLY a JSON array of objects, each {"memory": <one sentence, under '
-	'500 chars>, "subject": <optional client/record tag like \'PRJ-0007\', else '
+	"500 chars>, \"subject\": <optional client/record tag like 'PRJ-0007', else "
 	'"">}. If nothing is worth keeping, output [].'
 )
 
@@ -208,9 +208,7 @@ def _split_middle_tail(rows: list[dict]) -> tuple[list[dict], list[dict]]:
 	# pushed it into the middle, it would be folded into the summary — and the
 	# compaction prefix ("respond only to messages AFTER the summary") would then
 	# leave the agent with no current user turn to answer.
-	last_inbound = next(
-		(i for i in range(n - 1, -1, -1) if rows[i].get("direction") == "inbound"), None
-	)
+	last_inbound = next((i for i in range(n - 1, -1, -1) if rows[i].get("direction") == "inbound"), None)
 	if last_inbound is not None and last_inbound < tail_start:
 		tail_start = last_inbound
 	return rows[:tail_start], rows[tail_start:]
@@ -385,7 +383,7 @@ def _extract_facts_before_compaction(
 		]
 		response = provider.chat(messages=messages, tools=None, model=None)
 		facts = _parse_extracted_facts(response.get("content") or "")
-	except Exception as exc:  # noqa: BLE001 — best-effort; never break compaction
+	except Exception as exc:
 		frappe.logger("friday.compression").warning(
 			f"Fact extraction before compaction failed for session {session_id!r}: "
 			f"{type(exc).__name__}; compaction continues."
@@ -421,7 +419,7 @@ def _extract_facts_before_compaction(
 
 			enqueue_embed(doc.name)
 			written += 1
-		except Exception:  # noqa: BLE001 — one bad row must not abort the rest
+		except Exception:
 			frappe.logger("friday.compression").warning(
 				f"Could not persist an extracted memory for session {session_id!r} (skipped)."
 			)

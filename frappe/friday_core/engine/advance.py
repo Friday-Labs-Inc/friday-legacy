@@ -32,10 +32,9 @@ tasks.workflow.on_state_change) so the proven Task lifecycle code is untouched.
 from __future__ import annotations
 
 import frappe
-from frappe.model.workflow import apply_workflow
-
 from frappe.friday_core.engine import bundle
 from frappe.friday_core.engine.governance import acting_as
+from frappe.model.workflow import apply_workflow
 
 
 def on_task_update(doc, method: str | None = None) -> None:

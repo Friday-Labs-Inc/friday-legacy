@@ -29,9 +29,10 @@ returns. A hard kill (`send_stop_job_command`) is a named follow-up.
 
 from __future__ import annotations
 
+from rq.command import send_stop_job_command
+
 import frappe
 from frappe.utils.background_jobs import get_queue
-from rq.command import send_stop_job_command
 
 # One Redis key per session. Matches the session-lock keyspace convention.
 _INTERRUPT_PREFIX = "friday:interrupt:"
@@ -143,9 +144,7 @@ def _cancel_task(task_name: str) -> None:
 			update_modified=False,
 		)
 	except Exception:
-		frappe.logger("friday.interrupt").warning(
-			f"cascade cancel failed for {task_name!r}", exc_info=True
-		)
+		frappe.logger("friday.interrupt").warning(f"cascade cancel failed for {task_name!r}", exc_info=True)
 
 
 # ---------------------------------------------------------------------------

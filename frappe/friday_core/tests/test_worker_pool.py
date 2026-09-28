@@ -76,9 +76,7 @@ class TestResolveConcurrency(unittest.TestCase):
 		getter.assert_not_called()
 
 	def test_override_is_clamped(self):
-		self.assertEqual(
-			worker_pool.resolve_concurrency(override=1000), worker_pool.CONCURRENCY_HARD_CEILING
-		)
+		self.assertEqual(worker_pool.resolve_concurrency(override=1000), worker_pool.CONCURRENCY_HARD_CEILING)
 
 	def test_read_error_degrades_to_default(self):
 		boom = MagicMock(side_effect=RuntimeError("db down"))
@@ -90,25 +88,31 @@ class TestStartFridayWorker(unittest.TestCase):
 	"""start_friday_worker: single worker at 1, pool above 1."""
 
 	def test_single_worker_when_concurrency_one(self):
-		with patch("frappe.utils.background_jobs.start_worker") as sw, patch(
-			"frappe.utils.background_jobs.start_worker_pool"
-		) as swp, patch.object(worker_pool, "frappe"):
+		with (
+			patch("frappe.utils.background_jobs.start_worker") as sw,
+			patch("frappe.utils.background_jobs.start_worker_pool") as swp,
+			patch.object(worker_pool, "frappe"),
+		):
 			worker_pool.start_friday_worker(concurrency=1)
 		sw.assert_called_once_with(queue=worker_pool.FRIDAY_QUEUE, quiet=False)
 		swp.assert_not_called()
 
 	def test_pool_when_concurrency_above_one(self):
-		with patch("frappe.utils.background_jobs.start_worker") as sw, patch(
-			"frappe.utils.background_jobs.start_worker_pool"
-		) as swp, patch.object(worker_pool, "frappe"):
+		with (
+			patch("frappe.utils.background_jobs.start_worker") as sw,
+			patch("frappe.utils.background_jobs.start_worker_pool") as swp,
+			patch.object(worker_pool, "frappe"),
+		):
 			worker_pool.start_friday_worker(concurrency=6)
 		swp.assert_called_once_with(queue=worker_pool.FRIDAY_QUEUE, num_workers=6, quiet=False)
 		sw.assert_not_called()
 
 	def test_pool_count_is_clamped(self):
-		with patch("frappe.utils.background_jobs.start_worker"), patch(
-			"frappe.utils.background_jobs.start_worker_pool"
-		) as swp, patch.object(worker_pool, "frappe"):
+		with (
+			patch("frappe.utils.background_jobs.start_worker"),
+			patch("frappe.utils.background_jobs.start_worker_pool") as swp,
+			patch.object(worker_pool, "frappe"),
+		):
 			worker_pool.start_friday_worker(concurrency=10_000)
 		swp.assert_called_once_with(
 			queue=worker_pool.FRIDAY_QUEUE,
@@ -121,19 +125,12 @@ class TestAgentSettingsField(unittest.TestCase):
 	"""The max_concurrent_turns Int field exists and defaults to '1' (flag off)."""
 
 	def _load(self):
-		p = (
-			Path(__file__).resolve().parents[1]
-			/ "doctype"
-			/ "agent_settings"
-			/ "agent_settings.json"
-		)
+		p = Path(__file__).resolve().parents[1] / "doctype" / "agent_settings" / "agent_settings.json"
 		return json.loads(p.read_text())
 
 	def test_field_present_and_defaults_to_one(self):
 		doc = self._load()
-		field = next(
-			(f for f in doc["fields"] if f.get("fieldname") == "max_concurrent_turns"), None
-		)
+		field = next((f for f in doc["fields"] if f.get("fieldname") == "max_concurrent_turns"), None)
 		self.assertIsNotNone(field, "max_concurrent_turns field missing from Agent Settings")
 		self.assertEqual(field["fieldtype"], "Int")
 		self.assertEqual(field["default"], "1")

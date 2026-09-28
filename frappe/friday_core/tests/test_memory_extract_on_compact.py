@@ -85,7 +85,9 @@ class TestExtractFactsBeforeCompaction(unittest.TestCase):
 			fr.db.exists.return_value = False
 			doc = MagicMock()
 			fr.get_doc.return_value = doc
-			written = C._extract_facts_before_compaction("Friday", "sess-1", [{"direction": "inbound", "content": "..."}], provider)
+			written = C._extract_facts_before_compaction(
+				"Friday", "sess-1", [{"direction": "inbound", "content": "..."}], provider
+			)
 		self.assertEqual(written, 1)
 		args = fr.get_doc.call_args[0][0]
 		self.assertEqual(args["doctype"], "Agent Memory")
@@ -126,15 +128,16 @@ class TestCompactionFiresExtraction(unittest.TestCase):
 		rows = [{"name": str(i), "direction": "inbound", "content": "x" * 100} for i in range(50)]
 		provider = MagicMock()
 		provider.chat.return_value = {"content": "a summary"}
-		with patch(f"{_C}._load_uncompacted_rows", return_value=rows), patch(
-			f"{_C}.should_compress", return_value=True
-		), patch(f"{_C}._split_middle_tail", return_value=(rows[:40], rows[40:])), patch(
-			f"{_C}._resolve_aux_provider", return_value=(provider, "m")
-		), patch(f"{_C}.latest_summary", return_value=None), patch(
-			f"{_C}._persist_compaction", return_value="CS-1"
-		) as persist, patch(
-			f"{_C}._extract_facts_before_compaction", return_value=2
-		) as extract, patch(f"{_C}.EXTRACT_FACTS_ON_COMPACTION", extract_flag):
+		with (
+			patch(f"{_C}._load_uncompacted_rows", return_value=rows),
+			patch(f"{_C}.should_compress", return_value=True),
+			patch(f"{_C}._split_middle_tail", return_value=(rows[:40], rows[40:])),
+			patch(f"{_C}._resolve_aux_provider", return_value=(provider, "m")),
+			patch(f"{_C}.latest_summary", return_value=None),
+			patch(f"{_C}._persist_compaction", return_value="CS-1") as persist,
+			patch(f"{_C}._extract_facts_before_compaction", return_value=2) as extract,
+			patch(f"{_C}.EXTRACT_FACTS_ON_COMPACTION", extract_flag),
+		):
 			result = C.maybe_compress_session("Friday", "sess-1")
 		return result, extract, persist
 

@@ -170,9 +170,7 @@ def _generate_minimax(row: dict, prompt: str, aspect_ratio: str, count: int):
 	base_resp = payload.get("base_resp") or {}
 	status = base_resp.get("status_code")
 	if status not in (0, None):
-		return None, (
-			f"MiniMax image generation error {status}: {base_resp.get('status_msg') or ''}".strip()
-		)
+		return None, (f"MiniMax image generation error {status}: {base_resp.get('status_msg') or ''}".strip())
 	urls = (payload.get("data") or {}).get("image_urls") or []
 	return [{"url": u} for u in urls], None
 
@@ -257,9 +255,7 @@ def _attach_target(params: dict, ctx: dict):
 	session = ctx.get("session_id") or ""
 	if session.startswith("task::"):
 		task_name = session.removeprefix("task::")
-		wi = frappe.db.get_value(
-			"Task", task_name, ["work_item_doctype", "work_item_name"], as_dict=True
-		)
+		wi = frappe.db.get_value("Task", task_name, ["work_item_doctype", "work_item_name"], as_dict=True)
 		if wi and wi.work_item_doctype and wi.work_item_name:
 			return wi.work_item_doctype, wi.work_item_name
 	return None, None

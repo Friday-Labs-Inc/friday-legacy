@@ -34,29 +34,34 @@ class TestGetEmbedding(unittest.TestCase):
 		self.assertIsNone(E.get_embedding(""))
 
 	def test_cache_hit_skips_backend(self):
-		with patch(f"{_E}._backend", return_value="local"), patch(
-			f"{_E}._cache_get", return_value=[0.1, 0.2]
-		), patch(f"{_E}._embed_local") as local:
+		with (
+			patch(f"{_E}._backend", return_value="local"),
+			patch(f"{_E}._cache_get", return_value=[0.1, 0.2]),
+			patch(f"{_E}._embed_local") as local,
+		):
 			out = E.get_embedding("hello")
 		self.assertEqual(out, [0.1, 0.2])
 		local.assert_not_called()  # served from cache
 
 	def test_cache_miss_computes_and_caches(self):
-		with patch(f"{_E}._backend", return_value="local"), patch(
-			f"{_E}._cache_get", return_value=None
-		), patch(f"{_E}._embed_local", return_value=[0.3, 0.4]) as local, patch(
-			f"{_E}._cache_put"
-		) as put:
+		with (
+			patch(f"{_E}._backend", return_value="local"),
+			patch(f"{_E}._cache_get", return_value=None),
+			patch(f"{_E}._embed_local", return_value=[0.3, 0.4]) as local,
+			patch(f"{_E}._cache_put") as put,
+		):
 			out = E.get_embedding("hello")
 		self.assertEqual(out, [0.3, 0.4])
 		local.assert_called_once()
 		put.assert_called_once()
 
 	def test_dispatches_to_minimax_backend(self):
-		with patch(f"{_E}._backend", return_value="minimax"), patch(
-			f"{_E}._cache_get", return_value=None
-		), patch(f"{_E}._embed_minimax", return_value=[1.0]) as mm, patch(f"{_E}._embed_local") as local, patch(
-			f"{_E}._cache_put"
+		with (
+			patch(f"{_E}._backend", return_value="minimax"),
+			patch(f"{_E}._cache_get", return_value=None),
+			patch(f"{_E}._embed_minimax", return_value=[1.0]) as mm,
+			patch(f"{_E}._embed_local") as local,
+			patch(f"{_E}._cache_put"),
 		):
 			out = E.get_embedding("hi")
 		self.assertEqual(out, [1.0])
@@ -64,19 +69,23 @@ class TestGetEmbedding(unittest.TestCase):
 		local.assert_not_called()
 
 	def test_backend_failure_returns_none(self):
-		with patch(f"{_E}._backend", return_value="local"), patch(
-			f"{_E}._cache_get", return_value=None
-		), patch(f"{_E}._embed_local", side_effect=ImportError("no sentence-transformers")), patch(
-			f"{_E}.frappe"
-		) as fr:
+		with (
+			patch(f"{_E}._backend", return_value="local"),
+			patch(f"{_E}._cache_get", return_value=None),
+			patch(f"{_E}._embed_local", side_effect=ImportError("no sentence-transformers")),
+			patch(f"{_E}.frappe") as fr,
+		):
 			out = E.get_embedding("hello")
 		self.assertIsNone(out)
 		fr.logger.return_value.warning.assert_called()  # logged, not raised
 
 	def test_empty_vector_not_cached(self):
-		with patch(f"{_E}._backend", return_value="local"), patch(
-			f"{_E}._cache_get", return_value=None
-		), patch(f"{_E}._embed_local", return_value=[]), patch(f"{_E}._cache_put") as put:
+		with (
+			patch(f"{_E}._backend", return_value="local"),
+			patch(f"{_E}._cache_get", return_value=None),
+			patch(f"{_E}._embed_local", return_value=[]),
+			patch(f"{_E}._cache_put") as put,
+		):
 			out = E.get_embedding("hello")
 		self.assertEqual(out, [])
 		put.assert_not_called()
@@ -105,7 +114,10 @@ class TestMinimaxBackendShape(unittest.TestCase):
 		with patch(f"{_E}.frappe") as fr, patch("requests.post") as post:
 			fr.conf.get.return_value = None
 			fr.get_doc.return_value = self._row()
-			post.return_value.json.return_value = {"vectors": [[0.1, 0.2, 0.3]], "base_resp": {"status_code": 0}}
+			post.return_value.json.return_value = {
+				"vectors": [[0.1, 0.2, 0.3]],
+				"base_resp": {"status_code": 0},
+			}
 			out = E._embed_minimax("hello")
 		self.assertEqual(out, [0.1, 0.2, 0.3])
 		# sent the MiniMax-native body, not OpenAI's
@@ -151,26 +163,32 @@ class TestStoreEmbedding(unittest.TestCase):
 
 class TestEmbedMemoryJob(unittest.TestCase):
 	def test_embeds_and_stores(self):
-		with patch(f"{_E}.frappe") as fr, patch(f"{_E}.get_embedding", return_value=[0.5]) as ge, patch(
-			f"{_E}.store_embedding"
-		) as store:
+		with (
+			patch(f"{_E}.frappe") as fr,
+			patch(f"{_E}.get_embedding", return_value=[0.5]) as ge,
+			patch(f"{_E}.store_embedding") as store,
+		):
 			fr.db.get_value.return_value = {"memory": "loop hates serifs", "subject": "WI-1"}
 			E.embed_memory("MEM-1")
 		ge.assert_called_once()
 		store.assert_called_once_with("MEM-1", [0.5])
 
 	def test_no_embedding_skips_store(self):
-		with patch(f"{_E}.frappe") as fr, patch(f"{_E}.get_embedding", return_value=None), patch(
-			f"{_E}.store_embedding"
-		) as store:
+		with (
+			patch(f"{_E}.frappe") as fr,
+			patch(f"{_E}.get_embedding", return_value=None),
+			patch(f"{_E}.store_embedding") as store,
+		):
 			fr.db.get_value.return_value = {"memory": "x", "subject": ""}
 			E.embed_memory("MEM-1")
 		store.assert_not_called()
 
 	def test_missing_row_is_noop(self):
-		with patch(f"{_E}.frappe") as fr, patch(f"{_E}.get_embedding") as ge, patch(
-			f"{_E}.store_embedding"
-		) as store:
+		with (
+			patch(f"{_E}.frappe") as fr,
+			patch(f"{_E}.get_embedding") as ge,
+			patch(f"{_E}.store_embedding") as store,
+		):
 			fr.db.get_value.return_value = None
 			E.embed_memory("GONE")
 		ge.assert_not_called()

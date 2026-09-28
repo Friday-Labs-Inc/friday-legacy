@@ -123,8 +123,7 @@ def _build_snapshot() -> dict:
 	# switches it on, half the site's AI writes leave the audit trail — so the
 	# health strip reports it rather than letting it happen quietly.
 	surfaces["raven_ai_enabled"] = bool(
-		surfaces["raven_installed"]
-		and frappe.db.get_single_value("Raven Settings", "enable_ai_integration")
+		surfaces["raven_installed"] and frappe.db.get_single_value("Raven Settings", "enable_ai_integration")
 	)
 
 	open_issues = frappe.db.count("Issue", {"status": "Open"})

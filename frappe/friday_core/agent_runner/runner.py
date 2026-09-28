@@ -499,18 +499,14 @@ def _dispatch_and_journal(
 			# A.4 — the operator said NO. Break the loop and surface it;
 			# letting the model silently route around it is a governance hole.
 			if journal is not None:
-				journal.record(
-					EVENT_TURN_COMPLETED, {"reply": result.content, "reason": "permission_denial"}
-				)
+				journal.record(EVENT_TURN_COMPLETED, {"reply": result.content, "reason": "permission_denial"})
 			return result.content
 
 		if result.pending_approval:
 			# H2 — the skill needs human approval. Pause the turn and
 			# surface the request; a human resumes it later via approve().
 			if journal is not None:
-				journal.record(
-					EVENT_TURN_COMPLETED, {"reply": result.content, "reason": "pending_approval"}
-				)
+				journal.record(EVENT_TURN_COMPLETED, {"reply": result.content, "reason": "pending_approval"})
 			return result.content
 
 		# A.3 — feed the tool result (success or error) back verbatim so

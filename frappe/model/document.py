@@ -1412,11 +1412,20 @@ class Document(BaseDocument):
 			return
 		try:
 			frappe.db.savepoint("frappe_actor_stamp")
+			# Only the table name is interpolated, from self.doctype, which comes from
+			# the DocType registry and never from request data — the standard Frappe
+			# idiom. Every value below is bound. Accepted 2026-09-28, FRI-24.
+			# nosemgrep: frappe-semgrep-rules.rules.security.frappe-sql-format-injection
 			frappe.db.sql(
 				f"""update `tab{self.doctype}`
 				set `_actor_kind` = %(kind)s, `_actor` = %(id)s, `_trace_id` = %(trace)s
 				where name = %(name)s""",
-				{"kind": actor.get("kind"), "id": actor.get("id"), "trace": actor.get("trace_id"), "name": self.name},
+				{
+					"kind": actor.get("kind"),
+					"id": actor.get("id"),
+					"trace": actor.get("trace_id"),
+					"name": self.name,
+				},
 			)
 		except Exception:
 			frappe.db.rollback(save_point="frappe_actor_stamp")

@@ -28,15 +28,13 @@ def execute():
 			try:
 				frappe.db.savepoint("friday_actor_column")
 				frappe.db.sql_ddl(
-					f'ALTER TABLE `{table}` ADD COLUMN IF NOT EXISTS `{column}` varchar({length}) NULL'
+					f"ALTER TABLE `{table}` ADD COLUMN IF NOT EXISTS `{column}` varchar({length}) NULL"
 					if frappe.db.db_type != "postgres"
 					else f'ALTER TABLE "{table}" ADD COLUMN IF NOT EXISTS "{column}" varchar({length}) NULL'
 				)
 				added += 1
 			except Exception:
 				frappe.db.rollback(save_point="friday_actor_column")
-				frappe.logger("friday.actor").warning(
-					f"could not add {column} to {table}", exc_info=True
-				)
+				frappe.logger("friday.actor").warning(f"could not add {column} to {table}", exc_info=True)
 	frappe.db.commit()
 	print(f"actor columns: {added} column(s) ensured across {len(parents & existing)} tables")

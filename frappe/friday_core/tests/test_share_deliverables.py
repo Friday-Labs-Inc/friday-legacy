@@ -31,8 +31,16 @@ class TestShareDeliverables(unittest.TestCase):
 		mock_frappe.flags.get.return_value = {"session_id": "CH-1"}
 		mock_frappe.db.exists.return_value = True
 		mock_frappe.get_all.return_value = [
-			{"name": "f1", "file_name": "deliverable-pkg.pdf", "file_url": "/private/files/deliverable-pkg.pdf"},
-			{"name": "f2", "file_name": "deliverable-pkg.md", "file_url": "/private/files/deliverable-pkg.md"},
+			{
+				"name": "f1",
+				"file_name": "deliverable-pkg.pdf",
+				"file_url": "/private/files/deliverable-pkg.pdf",
+			},
+			{
+				"name": "f2",
+				"file_name": "deliverable-pkg.md",
+				"file_url": "/private/files/deliverable-pkg.md",
+			},
 		]
 		bot = MagicMock()
 		mock_frappe.get_doc.return_value = bot
@@ -72,7 +80,11 @@ class TestShareDeliverables(unittest.TestCase):
 		mock_frappe.db.exists.return_value = True
 		mock_frappe.get_all.return_value = [
 			{"name": "f1", "file_name": "deliverable-pkg.pdf", "file_url": None},
-			{"name": "f2", "file_name": "deliverable-pkg.md", "file_url": "/private/files/deliverable-pkg.md"},
+			{
+				"name": "f2",
+				"file_name": "deliverable-pkg.md",
+				"file_url": "/private/files/deliverable-pkg.md",
+			},
 		]
 		bot = MagicMock()
 		mock_frappe.get_doc.return_value = bot

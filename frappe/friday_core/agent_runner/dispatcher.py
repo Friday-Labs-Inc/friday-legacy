@@ -117,13 +117,12 @@ class DispatchResult:
 # `friday_skill_handlers`, and they are imported lazily on first lookup.
 # `register_skill_handler` and `_SKILL_HANDLERS` are re-exported here because
 # every handler module imports them from this path.
-from frappe.friday_core.skills.registry import (  # noqa: E402
+from frappe.friday_core.skills.registry import (
 	_SKILL_HANDLERS,
 	get_skill_handler,
 	load_handler_modules,
 	register_skill_handler,
 )
-
 
 # ---------------------------------------------------------------------------
 # Public entry point
@@ -354,6 +353,7 @@ def dispatch(
 		# turn's trace id — restored on exit even if the handler raises.
 		agent_user = frappe.db.get_value("Agent Profile", agent_profile, "frappe_user")
 		from contextlib import nullcontext
+
 		scope = frappe.acting_as(agent_user, kind="agent", id=agent_profile) if agent_user else nullcontext()
 		with scope:
 			outcome = _execute_sandboxed(

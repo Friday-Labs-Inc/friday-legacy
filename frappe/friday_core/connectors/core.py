@@ -105,8 +105,9 @@ def receive_event(connector_name: str) -> dict:
 	return {"ok": True, "event": event_id}
 
 
-def verify_signature(raw_body: bytes, header: str, secret: str, tolerance_seconds: int,
-					 endpoint: str | None = None) -> bool:
+def verify_signature(
+	raw_body: bytes, header: str, secret: str, tolerance_seconds: int, endpoint: str | None = None
+) -> bool:
 	"""Verify the Stripe-style per-attempt signature (locked contract).
 
 	Order matters: constant-time verify the digest FIRST (an attacker learns

@@ -242,7 +242,11 @@ def _deliverable_html(title: str, body_html: str, brand_context: "dict | None" =
 
 	header = ""
 	if company or logo:
-		logo_img = f"<img src='{logo}' style='height: 28px; vertical-align: middle; margin-right: 12px;'/>" if logo else ""
+		logo_img = (
+			f"<img src='{logo}' style='height: 28px; vertical-align: middle; margin-right: 12px;'/>"
+			if logo
+			else ""
+		)
 		header = (
 			f"<div style='border-bottom: 2px solid {accent}; padding-bottom: 12px; margin-bottom: 24px;'>"
 			f"{logo_img}<span style='font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; "
@@ -292,7 +296,9 @@ def _work_item_context_for(work_item_doctype: str, work_item_name: str, project_
 	from frappe.friday_core.engine import bundle
 
 	display_field = bundle.fields_for(work_item_doctype).get("display_name_field")
-	company = (frappe.db.get_value(work_item_doctype, work_item_name, display_field) if display_field else "") or ""
+	company = (
+		frappe.db.get_value(work_item_doctype, work_item_name, display_field) if display_field else ""
+	) or ""
 	ctx: dict = {"company": company}
 	# The CD's flagged logo (an image File he marked customer-facing) brands the PDFs.
 	logo_rows = frappe.get_all(

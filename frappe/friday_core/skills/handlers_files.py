@@ -272,15 +272,15 @@ def get_project_file(skill_name: str, parameters: dict) -> dict:
 		)
 		if not resolved_name:
 			return {
-			"result": (
-				f"File '{file_name}' is not readable on project '{project_name}' "
-				"(missing, not attached to this project, or not permitted). Call "
-				"list-project-files first and use a listed id or file name."
-			),
-			"error": "denied_or_unreachable",
-			"project_name": project_name,
-			"file_name": file_name,
-		}
+				"result": (
+					f"File '{file_name}' is not readable on project '{project_name}' "
+					"(missing, not attached to this project, or not permitted). Call "
+					"list-project-files first and use a listed id or file name."
+				),
+				"error": "denied_or_unreachable",
+				"project_name": project_name,
+				"file_name": file_name,
+			}
 
 	try:
 		file_doc = frappe.get_doc("File", resolved_name)

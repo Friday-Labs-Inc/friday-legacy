@@ -100,9 +100,7 @@ def provision_project_channel(project_name: str) -> "str | None":
 
 	# Reverse link on the Project (console nav + idempotency). db_set fires no
 	# document hooks — no second on_update, no recursion.
-	frappe.db.set_value(
-		"Project", project.name, "conversation_channel", channel.name, update_modified=False
-	)
+	frappe.db.set_value("Project", project.name, "conversation_channel", channel.name, update_modified=False)
 
 	_ensure_bot_member(channel.name, FRIDAY_BOT_NAME)
 
@@ -173,9 +171,9 @@ def _ensure_bot_member(channel_id: str, bot_name: str) -> None:
 	# Guard with exists() — Raven throws DuplicateEntryError on a re-add.
 	if frappe.db.exists("Raven Channel Member", {"channel_id": channel_id, "user_id": bot_user}):
 		return
-	frappe.get_doc(
-		{"doctype": "Raven Channel Member", "channel_id": channel_id, "user_id": bot_user}
-	).insert(ignore_permissions=True)
+	frappe.get_doc({"doctype": "Raven Channel Member", "channel_id": channel_id, "user_id": bot_user}).insert(
+		ignore_permissions=True
+	)
 
 
 def _seed_welcome(channel_id: str, project) -> None:

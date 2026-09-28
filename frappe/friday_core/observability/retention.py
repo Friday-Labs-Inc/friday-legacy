@@ -116,9 +116,7 @@ def write_task_completion_summary(doc) -> "str | None":
 			# auditing key without churning rows.
 			for k, v in summary_payload.items():
 				if k != "task":
-					frappe.db.set_value(
-						"Task Completion Summary", task_name, k, v, update_modified=True
-					)
+					frappe.db.set_value("Task Completion Summary", task_name, k, v, update_modified=True)
 			return task_name
 
 		row = frappe.get_doc({"doctype": "Task Completion Summary", **summary_payload})
@@ -151,7 +149,7 @@ def purge_old_events() -> int:
 	total_deleted = 0
 	try:
 		for _ in range(PURGE_MAX_BATCHES):
-			rows = frappe.db.sql(
+			frappe.db.sql(
 				"""
 				DELETE FROM `tabDispatcher Event`
 				WHERE name IN (

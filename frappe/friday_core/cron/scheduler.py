@@ -32,9 +32,9 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta
 
-import frappe
 from croniter import croniter
 
+import frappe
 from frappe.friday_core.gateway.delivery import DeliveryRouter, DeliveryTarget
 
 # How many due jobs one tick will fire. Mirrors the dispatcher's per-tick budget

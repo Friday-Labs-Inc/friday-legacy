@@ -59,8 +59,7 @@ def _cell_scheduler() -> dict:
 		# pipeline_health._scheduler_tick_age — avoids the sparse
 		# Scheduled Job Log table that misled the Project Console earlier.
 		row = frappe.db.sql(
-			"SELECT MAX(last_execution) AS last FROM `tabScheduled Job Type` "
-			"WHERE last_execution IS NOT NULL"
+			"SELECT MAX(last_execution) AS last FROM `tabScheduled Job Type` WHERE last_execution IS NOT NULL"
 		)
 		last = row[0][0] if row and row[0] else None
 		age_sec = int(time_diff_in_seconds(now_datetime(), last)) if last else None
@@ -189,6 +188,7 @@ def _cell_queues() -> dict:
 	"""Cell 5 — RQ default + friday queue depths + worker counts."""
 	try:
 		from rq import Queue
+
 		from frappe.utils.background_jobs import get_redis_conn
 
 		conn = get_redis_conn()

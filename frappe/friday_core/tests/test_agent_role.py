@@ -22,7 +22,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-
 # ── DocType field test ──────────────────────────────────────────────────────
 
 
@@ -31,10 +30,7 @@ class TestAgentRoleField(unittest.TestCase):
 
 	def setUp(self):
 		self.json_path = (
-			Path(__file__).resolve().parents[1]
-			/ "doctype"
-			/ "agent_profile"
-			/ "agent_profile.json"
+			Path(__file__).resolve().parents[1] / "doctype" / "agent_profile" / "agent_profile.json"
 		)
 		self.spec = json.loads(self.json_path.read_text())
 
@@ -77,6 +73,7 @@ class TestRolePromptScaffolding(unittest.TestCase):
 
 	def _build(self, role, operator_prompt=""):
 		from frappe.friday_core.llm.prompt_builder import _build_system_prompt
+
 		profile = _FakeProfile(agent_role=role, system_prompt=operator_prompt)
 		return _build_system_prompt(profile)
 
@@ -112,6 +109,7 @@ class TestRolePromptScaffolding(unittest.TestCase):
 		# Specialist so prompt assembly never crashes.
 		profile = _FakeProfile(agent_role=None)
 		from frappe.friday_core.llm.prompt_builder import _build_system_prompt
+
 		text = _build_system_prompt(profile)
 		self.assertIn("SPECIALIST ROLE", text)
 
@@ -140,6 +138,7 @@ class TestRoleDefaults(unittest.TestCase):
 
 	def _apply(self, doc):
 		from frappe.friday_core.doctype.agent_profile.agent_profile import apply_role_defaults
+
 		apply_role_defaults(doc)
 		return doc
 

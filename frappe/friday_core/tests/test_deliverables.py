@@ -27,9 +27,11 @@ def _project() -> str:
 	existing = frappe.get_all("Project", limit=1, pluck="name")
 	if existing:
 		return existing[0]
-	return frappe.get_doc(
-		{"doctype": "Project", "project_name": "Deliverables Test Project", "status": "Open"}
-	).insert(ignore_permissions=True).name
+	return (
+		frappe.get_doc({"doctype": "Project", "project_name": "Deliverables Test Project", "status": "Open"})
+		.insert(ignore_permissions=True)
+		.name
+	)
 
 
 def _task(project: str, title: str, result: "dict | None") -> str:
@@ -54,7 +56,9 @@ def _deliverable_files(dt: str, dn: str) -> list[str]:
 
 
 def _cleanup_task(task_name: str) -> None:
-	for f in frappe.get_all("File", filters={"attached_to_doctype": "Task", "attached_to_name": task_name}, pluck="name"):
+	for f in frappe.get_all(
+		"File", filters={"attached_to_doctype": "Task", "attached_to_name": task_name}, pluck="name"
+	):
 		frappe.delete_doc("File", f, force=True, ignore_permissions=True)
 	if frappe.db.exists("Task", task_name):
 		frappe.delete_doc("Task", task_name, force=True, ignore_permissions=True)
@@ -132,7 +136,6 @@ class TestMaterializeTask(unittest.TestCase):
 
 		materialize_task_deliverable(self.task)
 		frappe.db.commit()
-		first = set(_deliverable_files("Task", self.task))
 		materialize_task_deliverable(self.task)
 		frappe.db.commit()
 		# Same logical files, not doubled.
@@ -174,9 +177,11 @@ class TestProjectPackage(unittest.TestCase):
 	def test_package_combines_task_deliverables(self):
 		from frappe.friday_core.deliverables.materialize import assemble_project_package
 
-		project = frappe.get_doc(
-			{"doctype": "Project", "project_name": "Pkg Test Project", "status": "Open"}
-		).insert(ignore_permissions=True).name
+		project = (
+			frappe.get_doc({"doctype": "Project", "project_name": "Pkg Test Project", "status": "Open"})
+			.insert(ignore_permissions=True)
+			.name
+		)
 		t1 = _task(project, "Strategy", {"status": "success", "summary": "Strategy content ABC"})
 		t2 = _task(project, "Naming", {"status": "success", "summary": "Naming content XYZ"})
 		try:
@@ -193,7 +198,9 @@ class TestProjectPackage(unittest.TestCase):
 		finally:
 			_cleanup_task(t1)
 			_cleanup_task(t2)
-			for f in frappe.get_all("File", filters={"attached_to_doctype": "Project", "attached_to_name": project}, pluck="name"):
+			for f in frappe.get_all(
+				"File", filters={"attached_to_doctype": "Project", "attached_to_name": project}, pluck="name"
+			):
 				frappe.delete_doc("File", f, force=True, ignore_permissions=True)
 			frappe.delete_doc("Project", project, force=True, ignore_permissions=True)
 			frappe.db.commit()

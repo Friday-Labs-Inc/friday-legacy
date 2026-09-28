@@ -15,12 +15,27 @@ Never raises — the audit trail must not be able to break the write it records.
 
 import frappe
 
-SKIP_DOCTYPES = frozenset({
-	"Agent Write Log", "Execution Log", "Permission Decision Log", "LLM Usage Log",
-	"Dispatcher Event", "Turn Event", "Task Completion Summary", "Version", "Error Log",
-	"Comment", "Activity Log", "Access Log", "Deleted Document", "Notification Log",
-	"Scheduled Job Log", "Route History", "Energy Point Log",
-})
+SKIP_DOCTYPES = frozenset(
+	{
+		"Agent Write Log",
+		"Execution Log",
+		"Permission Decision Log",
+		"LLM Usage Log",
+		"Dispatcher Event",
+		"Turn Event",
+		"Task Completion Summary",
+		"Version",
+		"Error Log",
+		"Comment",
+		"Activity Log",
+		"Access Log",
+		"Deleted Document",
+		"Notification Log",
+		"Scheduled Job Log",
+		"Route History",
+		"Energy Point Log",
+	}
+)
 
 
 def on_actor_write(doc, action: str) -> None:

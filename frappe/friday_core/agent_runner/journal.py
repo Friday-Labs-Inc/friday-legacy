@@ -131,9 +131,7 @@ def rebuild(events: list[dict], profile_name: str, inject_steer) -> "ReplayState
 			state.messages.append(
 				{"role": "tool", "tool_call_id": call_id, "content": payload.get("content") or ""}
 			)
-			state.pending_tool_calls = [
-				c for c in state.pending_tool_calls if c.get("id") != call_id
-			]
+			state.pending_tool_calls = [c for c in state.pending_tool_calls if c.get("id") != call_id]
 
 		elif etype == EVENT_STEER_INJECTED:
 			inject_steer(state.messages, payload.get("text") or "")
@@ -198,7 +196,9 @@ class TurnJournal:
 		events = []
 		for row in rows:
 			try:
-				payload = json.loads(row["payload"]) if isinstance(row["payload"], str) else (row["payload"] or {})
+				payload = (
+					json.loads(row["payload"]) if isinstance(row["payload"], str) else (row["payload"] or {})
+				)
 			except (json.JSONDecodeError, TypeError):
 				payload = {}
 			events.append({"seq": row["seq"], "event_type": row["event_type"], "payload": payload})

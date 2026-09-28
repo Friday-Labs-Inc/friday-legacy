@@ -94,8 +94,7 @@ def _create(agent_profile: str, session_id: str, p: dict) -> dict:
 	).insert(ignore_permissions=True)
 	return {
 		"result": (
-			f"Cron job {job.name} created — next run "
-			f"{job.next_run_at or 'n/a'}, delivering to {deliver}."
+			f"Cron job {job.name} created — next run {job.next_run_at or 'n/a'}, delivering to {deliver}."
 		),
 		"status": "created",
 		"job": job.name,

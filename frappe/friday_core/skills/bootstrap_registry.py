@@ -57,6 +57,7 @@ def definition_ensures() -> tuple[str, ...]:
 	"""The kernel's bootstraps plus every installed app's."""
 	return tuple(DEFINITION_ENSURES) + tuple(frappe.get_hooks(HOOK) or [])
 
+
 # Bootstraps already on the migrate path through their OWN after_migrate
 # entry (kept individual for ordering or gating reasons). The reflection
 # test accepts either home; a new bootstrap must land in one of them.

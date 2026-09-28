@@ -13,9 +13,8 @@ schedule and computes the first/next fire time when the schedule changes.
 from __future__ import annotations
 
 import frappe
-from frappe.model.document import Document
-
 from frappe.friday_core.cron.scheduler import compute_next_run
+from frappe.model.document import Document
 
 
 class CronJob(Document):
@@ -46,6 +45,4 @@ class CronJob(Document):
 		try:
 			compute_next_run(self.schedule_kind, self.schedule_expr, frappe.utils.now_datetime())
 		except Exception as exc:
-			frappe.throw(
-				f"Invalid {self.schedule_kind} schedule {self.schedule_expr!r}: {exc}"
-			)
+			frappe.throw(f"Invalid {self.schedule_kind} schedule {self.schedule_expr!r}: {exc}")

@@ -16,7 +16,14 @@ PROFILE = "FRIDAY-ACTOR-TEST-PROFILE"
 
 def _ensure_profile():
 	if not frappe.db.exists("Agent Profile", PROFILE):
-		frappe.get_doc({"doctype": "Agent Profile", "profile_name": PROFILE, "agent_role": "Specialist", "status": "Active"}).insert(ignore_permissions=True)
+		frappe.get_doc(
+			{
+				"doctype": "Agent Profile",
+				"profile_name": PROFILE,
+				"agent_role": "Specialist",
+				"status": "Active",
+			}
+		).insert(ignore_permissions=True)
 		frappe.db.commit()
 	return frappe.get_doc("Agent Profile", PROFILE)
 
@@ -61,7 +68,9 @@ class TestActorPrimitive(unittest.TestCase):
 	def test_rows_are_stamped_with_the_actor(self):
 		profile = _ensure_profile()
 		with frappe.acting_as(profile.frappe_user, kind="agent", id=PROFILE, trace_id="trace-stamp-1"):
-			note = frappe.get_doc({"doctype": "Note", "title": "actor stamp", "content": "x"}).insert(ignore_permissions=True)
+			note = frappe.get_doc({"doctype": "Note", "title": "actor stamp", "content": "x"}).insert(
+				ignore_permissions=True
+			)
 		row = frappe.db.get_value("Note", note.name, ["_actor_kind", "_actor", "_trace_id"], as_dict=True)
 		self.assertEqual((row._actor_kind, row._actor, row._trace_id), ("agent", PROFILE, "trace-stamp-1"))
 		frappe.delete_doc("Note", note.name, force=True, ignore_permissions=True)
@@ -69,25 +78,41 @@ class TestActorPrimitive(unittest.TestCase):
 	def test_agent_write_is_audited_without_the_dispatcher(self):
 		profile = _ensure_profile()
 		with frappe.acting_as(profile.frappe_user, kind="agent", id=PROFILE, trace_id="trace-audit-1"):
-			note = frappe.get_doc({"doctype": "Note", "title": "audited", "content": "y"}).insert(ignore_permissions=True)
-		rows = frappe.get_all("Agent Write Log", filters={"ref_doctype": "Note", "ref_name": note.name}, fields=["action", "actor", "trace_id", "user"])
+			note = frappe.get_doc({"doctype": "Note", "title": "audited", "content": "y"}).insert(
+				ignore_permissions=True
+			)
+		rows = frappe.get_all(
+			"Agent Write Log",
+			filters={"ref_doctype": "Note", "ref_name": note.name},
+			fields=["action", "actor", "trace_id", "user"],
+		)
 		self.assertEqual(len(rows), 1, "one audit row per agent write")
-		self.assertEqual((rows[0].action, rows[0].actor, rows[0].trace_id, rows[0].user), ("save", PROFILE, "trace-audit-1", profile.frappe_user))
+		self.assertEqual(
+			(rows[0].action, rows[0].actor, rows[0].trace_id, rows[0].user),
+			("save", PROFILE, "trace-audit-1", profile.frappe_user),
+		)
 		frappe.delete_doc("Note", note.name, force=True, ignore_permissions=True)
 
 	def test_human_write_is_not_audited(self):
 		before = frappe.db.count("Agent Write Log")
-		note = frappe.get_doc({"doctype": "Note", "title": "human", "content": "z"}).insert(ignore_permissions=True)
+		note = frappe.get_doc({"doctype": "Note", "title": "human", "content": "z"}).insert(
+			ignore_permissions=True
+		)
 		self.assertEqual(frappe.db.count("Agent Write Log"), before)
 		frappe.delete_doc("Note", note.name, force=True, ignore_permissions=True)
 
 	def test_job_carries_the_actor(self):
 		frappe.set_actor("agent", PROFILE, "trace-job-1")
 		captured = {}
+
 		def fake_enqueue_call(*args, **kwargs):
 			captured.update(kwargs.get("kwargs") or {})
-			class J: id = "j"; 
+
+			class J:
+				id = "j"
+
 			return J()
+
 		with patch("frappe.utils.background_jobs.get_queue") as gq:
 			gq.return_value.enqueue_call.side_effect = fake_enqueue_call
 			frappe.enqueue("frappe.ping", now=False)
